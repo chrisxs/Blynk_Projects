@@ -13,9 +13,9 @@
 
 const int MosPin = 15;
 
-char auth[] = "d05036547803452bba0e14ede77b7a86";
-char ssid[] = "chrisxs_01";
-char pass[] = "aj20160223";
+char auth[] = "你的TOKEN";
+char ssid[] = "你的SSID";
+char pass[] = "你的WiFi密码";
 
 /////磁力锁/////
 BLYNK_WRITE(V0) {
@@ -72,7 +72,7 @@ void setup() {
   }
 
   // Hostname defaults to esp8266-[ChipID]
-  ArduinoOTA.setHostname("Blynk_DoorLocker-E9:2B");
+  ArduinoOTA.setHostname("Blynk_DoorLocker-DEMO");
   // No authentication by default
   // ArduinoOTA.setPassword("admin");
 
