@@ -116,7 +116,7 @@ void setup() {
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
   //delay(5000);
-  Blynk.config(auth, "cn-cd-dx.sakurafrp.com", 18080);
+  Blynk.config(auth, "你的域名", 80);  //Blynk.config(auth, "你的域名", 你的端口);
 }
 
 void loop() {
