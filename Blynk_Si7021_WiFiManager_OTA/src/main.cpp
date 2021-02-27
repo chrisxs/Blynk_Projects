@@ -1,15 +1,15 @@
 #include <Arduino.h>
-#include <FS.h>                   //this needs to be first, or it all crashes and burns...
+#include <FS.h> //this needs to be first, or it all crashes and burns...
 #define BLYNK_PRINT Serial
 //#define BLYNK_DEBUG
 
-#include <ESP8266WiFi.h>          //https://github.com/esp8266/Arduino 不能使用D1minipro,会死机
+#include <ESP8266WiFi.h> //https://github.com/esp8266/Arduino 不能使用D1minipro,会死机
 
 //////////wifimanager//////////
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
-#include <WiFiManager.h>          //https://github.com/tzapu/WiFiManager 0.15.0
-#include <ArduinoJson.h>          //https://github.com/bblanchon/ArduinoJson 5.13.5
+#include <WiFiManager.h> //https://github.com/tzapu/WiFiManager 0.15.0
+#include <ArduinoJson.h> //https://github.com/bblanchon/ArduinoJson 5.13.5
 
 //////////OTA//////////
 #include <ESP8266WiFi.h>
@@ -26,10 +26,9 @@
 #include <string>
 #include <stdlib.h>
 
-
 //define your default values here, if there are different values in config.json, they are overwritten.
 std::string blynk_server;
-std::string blynk_port ;
+std::string blynk_port;
 std::string blynk_token;
 
 //flag for saving data
@@ -42,11 +41,11 @@ Adafruit_Si7021 sensor = Adafruit_Si7021();
 BlynkTimer timer;
 
 //callback notifying us of the need to save config
-void saveConfigCallback () {
+void saveConfigCallback()
+{
   Serial.println("Should save config");
   shouldSaveConfig = true;
 }
-
 
 void sendSensor()
 {
@@ -56,8 +55,8 @@ void sendSensor()
   Blynk.virtualWrite(V1, t);
 }
 
-
-void setup() {
+void setup()
+{
   // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.println();
@@ -73,13 +72,16 @@ void setup() {
   //read configuration from FS json
   Serial.println("mounting FS...");
 
-  if (SPIFFS.begin()) {
+  if (SPIFFS.begin())
+  {
     Serial.println("mounted file system");
-    if (SPIFFS.exists("/config.json")) {
+    if (SPIFFS.exists("/config.json"))
+    {
       //file exists, reading and loading
       Serial.println("reading config file");
       File configFile = SPIFFS.open("/config.json", "r");
-      if (configFile) {
+      if (configFile)
+      {
         Serial.println("opened config file");
         size_t size = configFile.size();
         // Allocate a buffer to store contents of the file.
@@ -87,22 +89,26 @@ void setup() {
 
         configFile.readBytes(buf.get(), size);
         DynamicJsonBuffer jsonBuffer;
-        JsonObject& json = jsonBuffer.parseObject(buf.get());
+        JsonObject &json = jsonBuffer.parseObject(buf.get());
         json.printTo(Serial);
-        if (json.success()) {
+        if (json.success())
+        {
           Serial.println("\nparsed json");
 
           blynk_server = json["blynk_server"].as<const char *>();
           blynk_port = json["blynk_port"].as<const char *>();
           blynk_token = json["blynk_token"].as<const char *>();
-
-        } else {
+        }
+        else
+        {
           Serial.println("failed to load json config");
         }
         configFile.close();
       }
     }
-  } else {
+  }
+  else
+  {
     Serial.println("failed to mount FS");
   }
   //end read
@@ -138,39 +144,18 @@ void setup() {
   {
     Serial.println("Getting Reset ESP Wifi-Setting.......");
     digitalWrite(LedPin, LOW);
-    delay(1000);
-    digitalWrite(LedPin, HIGH);
-    delay(300);
-    digitalWrite(LedPin, LOW);
-    delay(1000);
-    digitalWrite(LedPin, HIGH);
-    delay(100);
-    digitalWrite(LedPin, LOW);
-    delay(1000);
-    digitalWrite(LedPin, HIGH);
-
     wifiManager.resetSettings();
-    delay(10000);
-
-    digitalWrite(LedPin, LOW);
-    delay(1000);
+    delay(5000);
     digitalWrite(LedPin, HIGH);
-    delay(300);
+    delay(5000);
     digitalWrite(LedPin, LOW);
-    delay(1000);
-    digitalWrite(LedPin, HIGH);
-    delay(100);
-    digitalWrite(LedPin, LOW);
-    delay(1000);
-    digitalWrite(LedPin, HIGH);
     Serial.println("Formatting FS......");
     SPIFFS.format();
-    delay(10000);
-
+    delay(5000);
+    digitalWrite(LedPin, HIGH);
     Serial.println("Done Reboot In 5 seconds");
     digitalWrite(LedPin, LOW);
     delay(5000);
-    digitalWrite(LedPin, HIGH);
     ESP.restart();
   }
 
@@ -187,7 +172,8 @@ void setup() {
   //if it does not connect it starts an access point with the specified name
   //here  "AutoConnectAP"
   //and goes into a blocking loop awaiting configuration
-  if (!wifiManager.autoConnect("Si7021-DEMO", "")) {
+  if (!wifiManager.autoConnect("Si7021-DEMO", ""))
+  {
     Serial.println("failed to connect and hit timeout");
     delay(3000);
     //reset and try again, or maybe put it to deep sleep
@@ -204,16 +190,18 @@ void setup() {
   blynk_token = custom_blynk_token.getValue();
 
   //save the custom parameters to FS
-  if (shouldSaveConfig) {
+  if (shouldSaveConfig)
+  {
     Serial.println("saving config");
     DynamicJsonBuffer jsonBuffer;
-    JsonObject& json = jsonBuffer.createObject();
+    JsonObject &json = jsonBuffer.createObject();
     json["blynk_server"] = blynk_server.c_str();
     json["blynk_port"] = blynk_port.c_str();
     json["blynk_token"] = blynk_token.c_str();
 
     File configFile = SPIFFS.open("/config.json", "w");
-    if (!configFile) {
+    if (!configFile)
+    {
       Serial.println("failed to open config file for writing");
     }
 
@@ -234,9 +222,12 @@ void setup() {
 
   ArduinoOTA.onStart([]() {
     String type;
-    if (ArduinoOTA.getCommand() == U_FLASH) {
+    if (ArduinoOTA.getCommand() == U_FLASH)
+    {
       type = "sketch";
-    } else { // U_SPIFFS
+    }
+    else
+    { // U_SPIFFS
       type = "filesystem";
     }
 
@@ -251,30 +242,39 @@ void setup() {
   });
   ArduinoOTA.onError([](ota_error_t error) {
     Serial.printf("Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR) {
+    if (error == OTA_AUTH_ERROR)
+    {
       Serial.println("Auth Failed");
-    } else if (error == OTA_BEGIN_ERROR) {
+    }
+    else if (error == OTA_BEGIN_ERROR)
+    {
       Serial.println("Begin Failed");
-    } else if (error == OTA_CONNECT_ERROR) {
+    }
+    else if (error == OTA_CONNECT_ERROR)
+    {
       Serial.println("Connect Failed");
-    } else if (error == OTA_RECEIVE_ERROR) {
+    }
+    else if (error == OTA_RECEIVE_ERROR)
+    {
       Serial.println("Receive Failed");
-    } else if (error == OTA_END_ERROR) {
+    }
+    else if (error == OTA_END_ERROR)
+    {
       Serial.println("End Failed");
     }
   });
   ArduinoOTA.begin();
   sensor.begin();
-  Serial.println( WiFi.localIP().toString());
+  Serial.println(WiFi.localIP().toString());
   Serial.println(blynk_server.c_str());
   Serial.println(blynk_port.c_str());
   Serial.println(blynk_token.c_str());
   Blynk.config(blynk_token.c_str(), blynk_server.c_str(), std::atoi(blynk_port.c_str()));
   timer.setInterval(1000L, sendSensor);
-
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
   ArduinoOTA.handle();
   Blynk.run();
