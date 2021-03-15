@@ -48,32 +48,71 @@ BLYNK_CONNECTED()
 
 BLYNK_WRITE(V1)
 {
+  int state = param.asInt();
   servo1.write(param.asInt());
 }
 
 BLYNK_WRITE(V2)
 {
+  int state = param.asInt();
   servo2.write(param.asInt());
 }
 
 BLYNK_WRITE(V3)
 {
+  int state = param.asInt();
   servo3.write(param.asInt());
 }
 
 BLYNK_WRITE(V4)
 {
+  int state = param.asInt();
   servo4.write(param.asInt());
 }
 
 BLYNK_WRITE(V5)
 {
-  servo5.write(param.asInt());
+  int state = param.asInt();
+  servo5.write(state);
 }
 
 BLYNK_WRITE(V6)
 {
-  servo6.write(param.asInt());
+  int state = param.asInt();
+  servo6.write(state);
+}
+
+/////动作组按钮-0/////
+BLYNK_WRITE(V0)
+{
+  int state = param.asInt();
+  int pos1 = 135;
+  int pos2 = 135;
+  int pos3 = 135;
+  int pos4 = 135;
+  int pos5 = 135;
+  int pos6 = 135;
+
+  if (state == 1)
+  {
+    Blynk.virtualWrite(V1, pos1);
+    servo1.write(pos1);
+
+    Blynk.virtualWrite(V2, pos2);
+    servo2.write(pos2);
+
+    Blynk.virtualWrite(V3, pos3);
+    servo3.write(pos3);
+
+    Blynk.virtualWrite(V4, pos4);
+    servo4.write(pos4);
+
+    Blynk.virtualWrite(V5, pos5);
+    servo5.write(pos5);
+
+    Blynk.virtualWrite(V6, pos6);
+    servo6.write(pos6);
+  }
 }
 
 void drawImageDemo()
@@ -232,10 +271,10 @@ void setup()
     ESP.restart();
   }
 
-    display.clear();
-    display.drawString(0, 40, "AP-SSID:RobotArm .");
-    display.drawString(0, 50, "Password:none");
-    display.display();
+  display.clear();
+  display.drawString(0, 40, "AP-SSID:RobotArm .");
+  display.drawString(0, 50, "Password:none");
+  display.display();
 
   if (!wifiManager.autoConnect("RobotArm", ""))
   {
