@@ -3,9 +3,6 @@
 #include <FS.h> //this needs to be first, or it all crashes and burns...
 #include <Arduino.h>
 
-/////舵机库/////
-#include <Servo.h>
-
 /////WiFiManager/////
 #include <ESP8266WiFi.h> //https://github.com/esp8266/Arduino
 #include <ESP8266WebServer.h>
@@ -20,9 +17,11 @@
 ////Blynk/////
 #include <BlynkSimpleEsp8266.h>
 
-/////OLED/////
-#include <Wire.h> // Only needed for Arduino 1.6.5 and earlier
-#include "SSD1306Wire.h"
+/////OLED设置/////
+#include "OLED_Setup.h"
+/////舵机设置/////
+#include "Servo_Setup.h"
+
 
 #include <string>
 #include <stdlib.h>
@@ -32,8 +31,6 @@ std::string blynk_server;
 std::string blynk_port;
 std::string blynk_token;
 
-//声明舵机名称
-Servo servo1, servo2, servo3, servo4, servo5, servo6;
 
 //标记是否储存
 bool shouldSaveConfig = false;
@@ -41,7 +38,6 @@ bool shouldSaveConfig = false;
 const int ResetButton = D5;
 int ResetButtonState = digitalRead(ResetButton);
 
-SSD1306Wire display(0x3c, D2, D1); // 设置OLED屏幕的名称/引脚/地址
 
 //回调通知我们需要保存配置
 void saveConfigCallback()
@@ -127,19 +123,6 @@ BLYNK_WRITE(V0)
   }
 }
 
-/////用于OLED显示网络信息的自定义程序/////
-void drawinfo()
-{
-  display.setFont(ArialMT_Plain_10);
-  display.clear();
-  display.drawString(0, 0, "Hostname: " + String(WiFi.hostname()));
-  display.drawString(0, 10, "RSSI: " + String(WiFi.RSSI()) + " dB");
-  display.drawString(0, 20, "MAC: " + String(WiFi.macAddress()));
-  display.drawString(0, 30, "IP: " + String(WiFi.localIP().toString()));
-  display.drawString(0, 40, "SSID: " + String(WiFi.SSID()));
-  display.display();
-}
-
 void setup()
 {
   Serial.begin(115200);
@@ -147,19 +130,8 @@ void setup()
 
   pinMode(ResetButton, INPUT_PULLUP);
 
-  servo1.attach(D0);
-  servo2.attach(D3);
-  servo3.attach(D4);
-  servo4.attach(D6);
-  servo5.attach(D7);
-  servo6.attach(D8);
-
-  servo1.write(90);
-  servo2.write(90);
-  servo3.write(90);
-  servo4.write(90);
-  servo5.write(90);
-  servo6.write(90);
+  AtatchServo();
+  ServoDefaultPOS();
 
   /////OLED/////
   display.init();
@@ -247,50 +219,18 @@ void setup()
   if (ResetButtonState == LOW)
   {
     Serial.println("Getting Reset ESP Wifi-Setting.......");
-    display.setFont(ArialMT_Plain_10);
-    display.clear();
-    display.drawString(0, 40, "RESET mode activated .");
-    display.drawString(0, 50, "Please wait for reboot !");
-    display.display();
+    ResetMode();
     wifiManager.resetSettings();
     delay(5000);
 
     Serial.println("Formatting FS......");
     SPIFFS.format();
 
-    display.clear();
-    display.drawString(5, 25, "Reboot in 5 Sec !");
-    display.display();
-    delay(1000);
-
-    display.clear();
-    display.drawString(5, 25, "Reboot in 4 Sec !");
-    display.display();
-    delay(1000);
-
-    display.clear();
-    display.drawString(5, 25, "Reboot in 3 Sec !");
-    display.display();
-    delay(1000);
-
-    display.clear();
-    display.drawString(5, 25, "Reboot in 2 Sec !");
-    display.display();
-    delay(1000);
-
-    display.clear();
-    display.drawString(5, 25, "Reboot in 1 Sec !");
-    display.display();
-    delay(1000);
+    RebootCountdown();
     ESP.restart();
   }
 
-/////OLED显示AP名称和密码/////
-  display.clear();
-  display.drawString(0, 40, "AP-SSID:RobotArm .");
-  display.drawString(0, 50, "Password:none");
-  display.display();
-
+  ShowAP_SSID();
   if (!wifiManager.autoConnect("RobotArm", ""))
   {
     Serial.println("failed to connect and hit timeout");
