@@ -1,51 +1,63 @@
 #define BLYNK_PRINT Serial
-#include <Arduino.h>
+
 #include <FS.h> //this needs to be first, or it all crashes and burns...
+#include <Arduino.h>
+
+/////舵机库/////
 #include <Servo.h>
 
+/////WiFiManager/////
 #include <ESP8266WiFi.h> //https://github.com/esp8266/Arduino
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
 #include <WiFiManager.h> //https://github.com/tzapu/WiFiManager
 #include <ArduinoJson.h> //https://github.com/bblanchon/ArduinoJson
+
+/////OTA/////
+#include <ArduinoOTA.h>
+#include <WiFiUdp.h>
+
+////Blynk/////
 #include <BlynkSimpleEsp8266.h>
 
-#include <ArduinoOTA.h>
-
+/////OLED/////
 #include <Wire.h> // Only needed for Arduino 1.6.5 and earlier
 #include "SSD1306Wire.h"
 
 #include <string>
 #include <stdlib.h>
 
-//define your default values here, if there are different values in config.json, they are overwritten.
+//用于WiFiManager界面中的变量服务器域名、端口、口令
 std::string blynk_server;
 std::string blynk_port;
 std::string blynk_token;
 
-Servo servo1, servo2, servo3, servo4, servo5, servo6; //声明舵机名称
+//声明舵机名称
+Servo servo1, servo2, servo3, servo4, servo5, servo6;
 
-//flag for saving data
+//标记是否储存
 bool shouldSaveConfig = false;
 
 const int ResetButton = D5;
 int ResetButtonState = digitalRead(ResetButton);
 
-SSD1306Wire display(0x3c, D2, D1); // ADDRESS, SDA, SCL  -  SDA and SCL usually populate automatically based on your board's pins_arduino.h
+SSD1306Wire display(0x3c, D2, D1); // 设置OLED屏幕的名称/引脚/地址
 
-//callback notifying us of the need to save config
+//回调通知我们需要保存配置
 void saveConfigCallback()
 {
   Serial.println("Should save config");
   shouldSaveConfig = true;
 }
 
+//当Blynk连接时,同步APP端的引脚状态
 BLYNK_CONNECTED()
 {
   Blynk.syncAll();
   //Blynk.syncVirtual(V1, V2, V3, V4, V5, V6);
 }
 
+/////设置舵机在Blynk中的虚拟引脚/////
 BLYNK_WRITE(V1)
 {
   int state = param.asInt();
@@ -115,7 +127,8 @@ BLYNK_WRITE(V0)
   }
 }
 
-void drawImageDemo()
+/////用于OLED显示网络信息的自定义程序/////
+void drawinfo()
 {
   display.setFont(ArialMT_Plain_10);
   display.clear();
@@ -129,7 +142,6 @@ void drawImageDemo()
 
 void setup()
 {
-  // put your setup code here, to run once:
   Serial.begin(115200);
   Serial.println();
 
@@ -149,10 +161,12 @@ void setup()
   servo5.write(90);
   servo6.write(90);
 
+  /////OLED/////
   display.init();
-
   display.flipScreenVertically();
   display.setFont(ArialMT_Plain_10);
+
+  /////WiFiManager/////
 
   //clean FS, for testing
   //SPIFFS.format();
@@ -271,6 +285,7 @@ void setup()
     ESP.restart();
   }
 
+/////OLED显示AP名称和密码/////
   display.clear();
   display.drawString(0, 40, "AP-SSID:RobotArm .");
   display.drawString(0, 50, "Password:none");
@@ -286,7 +301,7 @@ void setup()
   }
 
   //if you get here you have connected to the WiFi
-  Serial.println("connected...yeey :)");
+  Serial.println("connected.)");
 
   //read updated parameters
   blynk_server = custom_blynk_server.getValue();
@@ -331,6 +346,8 @@ void setup()
   Serial.println("local ip");
   Serial.println(WiFi.localIP());
   delay(500);
+
+  /////OTA/////
   ArduinoOTA.setHostname("RobotArm");
   ArduinoOTA.onStart([]() {
     String type;
@@ -383,5 +400,5 @@ void loop()
 {
   ArduinoOTA.handle();
   Blynk.run();
-  drawImageDemo();
+  drawinfo();
 }
