@@ -53,8 +53,6 @@ BLYNK_CONNECTED()
   //Blynk.syncVirtual(V1, V2, V3, V4, V5, V6);
 }
 
-
-
 void setup()
 {
   Serial.begin(115200);
@@ -221,6 +219,7 @@ void setup()
 
   /////OTA/////
   ArduinoOTA.setHostname("RobotArm");
+
   ArduinoOTA.onStart([]() {
     String type;
     if (ArduinoOTA.getCommand() == U_FLASH)
@@ -235,12 +234,26 @@ void setup()
     // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
     Serial.println("Start updating " + type);
   });
+
   ArduinoOTA.onEnd([]() {
     Serial.println("\nEnd");
+    display.clear();
+    display.setFont(ArialMT_Plain_10);
+    display.setTextAlignment(TEXT_ALIGN_CENTER_BOTH);
+    display.drawString(display.getWidth() / 2, display.getHeight() / 2, "Restart");
+    display.display();
   });
+
+  //ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+  //  Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+  //});
+
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+    display.clear();
+    display.drawProgressBar(4, 32, 120, 8, progress / (total / 100));
+    display.display();
   });
+
   ArduinoOTA.onError([](ota_error_t error) {
     Serial.printf("Error[%u]: ", error);
     if (error == OTA_AUTH_ERROR)
