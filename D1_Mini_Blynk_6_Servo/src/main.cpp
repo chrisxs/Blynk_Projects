@@ -21,7 +21,9 @@
 #include "OLED_Setup.h"
 /////舵机设置/////
 #include "Servo_Setup.h"
-
+/////Blynk舵机滑动条/////
+#include "Blynk_Slider.h"
+#include "Blynk_POS_Group.h"
 
 #include <string>
 #include <stdlib.h>
@@ -31,13 +33,11 @@ std::string blynk_server;
 std::string blynk_port;
 std::string blynk_token;
 
-
 //标记是否储存
 bool shouldSaveConfig = false;
 
 const int ResetButton = D5;
 int ResetButtonState = digitalRead(ResetButton);
-
 
 //回调通知我们需要保存配置
 void saveConfigCallback()
@@ -53,75 +53,7 @@ BLYNK_CONNECTED()
   //Blynk.syncVirtual(V1, V2, V3, V4, V5, V6);
 }
 
-/////设置舵机在Blynk中的虚拟引脚/////
-BLYNK_WRITE(V1)
-{
-  int state = param.asInt();
-  servo1.write(param.asInt());
-}
 
-BLYNK_WRITE(V2)
-{
-  int state = param.asInt();
-  servo2.write(param.asInt());
-}
-
-BLYNK_WRITE(V3)
-{
-  int state = param.asInt();
-  servo3.write(param.asInt());
-}
-
-BLYNK_WRITE(V4)
-{
-  int state = param.asInt();
-  servo4.write(param.asInt());
-}
-
-BLYNK_WRITE(V5)
-{
-  int state = param.asInt();
-  servo5.write(state);
-}
-
-BLYNK_WRITE(V6)
-{
-  int state = param.asInt();
-  servo6.write(state);
-}
-
-/////动作组按钮-0/////
-BLYNK_WRITE(V0)
-{
-  int state = param.asInt();
-  int pos1 = 135;
-  int pos2 = 135;
-  int pos3 = 135;
-  int pos4 = 135;
-  int pos5 = 135;
-  int pos6 = 135;
-
-  if (state == 1)
-  {
-    Blynk.virtualWrite(V1, pos1);
-    servo1.write(pos1);
-
-    Blynk.virtualWrite(V2, pos2);
-    servo2.write(pos2);
-
-    Blynk.virtualWrite(V3, pos3);
-    servo3.write(pos3);
-
-    Blynk.virtualWrite(V4, pos4);
-    servo4.write(pos4);
-
-    Blynk.virtualWrite(V5, pos5);
-    servo5.write(pos5);
-
-    Blynk.virtualWrite(V6, pos6);
-    servo6.write(pos6);
-  }
-}
 
 void setup()
 {
