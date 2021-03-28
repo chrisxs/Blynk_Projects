@@ -20,7 +20,7 @@
 #include <string>
 #include <stdlib.h>
 
-
+/////传感器的函数/////
 #include "Send_Sensor_Data.h"
 
 //用于WiFiManager界面中的变量服务器域名、端口、口令
@@ -34,8 +34,8 @@ BlynkTimer timer;
 bool shouldSaveConfig = false;
 
 const int ResetButton = D5;
+const int LED = D4;
 int ResetButtonState = digitalRead(ResetButton);
-
 
 //回调通知我们需要保存配置
 void saveConfigCallback()
@@ -50,7 +50,9 @@ void setup()
   Serial.println();
 
   pinMode(ResetButton, INPUT_PULLUP);
-  unsigned status;
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, HIGH);
+  //unsigned status;
   bme.begin(0x76);
   light.begin();
 
@@ -136,10 +138,15 @@ void setup()
   {
     Serial.println("Getting Reset ESP Wifi-Setting.......");
     wifiManager.resetSettings();
+    digitalWrite(LED, LOW);
     delay(5000);
+    digitalWrite(LED, HIGH);
 
     Serial.println("Formatting FS......");
     SPIFFS.format();
+    digitalWrite(LED, LOW);
+    delay(5000);
+    digitalWrite(LED, HIGH);
     ESP.restart();
   }
 
@@ -262,4 +269,7 @@ void loop()
   ArduinoOTA.handle();
   Blynk.run();
   timer.run();
+  Blynk.virtualWrite(V5, "IP地址:", WiFi.localIP().toString());
+  Blynk.virtualWrite(V6, "MAC地址:", WiFi.macAddress());
+  Blynk.virtualWrite(V7, "RSSI:", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID());
 }
