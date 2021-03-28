@@ -51,8 +51,8 @@ void sendSensor()
 {
   float h = sensor.readHumidity();
   float t = sensor.readTemperature(); // or dht.readTemperature(true) for Fahrenheit
-  Blynk.virtualWrite(V0, h);
-  Blynk.virtualWrite(V1, t);
+  Blynk.virtualWrite(V0, t);
+  Blynk.virtualWrite(V1, h);
 }
 
 void setup()
