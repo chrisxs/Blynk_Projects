@@ -20,12 +20,8 @@
 #include <string>
 #include <stdlib.h>
 
-/////传感器/////
-#include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BME280.h>
-#include <MAX44009.h>
 
+#include "Send_Sensor_Data.h"
 
 //用于WiFiManager界面中的变量服务器域名、端口、口令
 std::string blynk_server;
@@ -40,22 +36,6 @@ bool shouldSaveConfig = false;
 const int ResetButton = D5;
 int ResetButtonState = digitalRead(ResetButton);
 
-MAX44009 light;
-Adafruit_BME280 bme; // I2C
-#define SEALEVELPRESSURE_HPA (1020)
-
-void sendSensor()
-{
-    float t = bme.readTemperature(); // or dht.readTemperature(true) for Fahrenheit
-    float h = bme.readHumidity();
-    float p = bme.readPressure() / 100.0F;
-    float l = light.get_lux();
-
-    Blynk.virtualWrite(V0, h);
-    Blynk.virtualWrite(V1, t);
-    Blynk.virtualWrite(V2, p);
-    Blynk.virtualWrite(V3, l);
-}
 
 //回调通知我们需要保存配置
 void saveConfigCallback()
@@ -63,7 +43,6 @@ void saveConfigCallback()
   Serial.println("Should save config");
   shouldSaveConfig = true;
 }
-
 
 void setup()
 {
