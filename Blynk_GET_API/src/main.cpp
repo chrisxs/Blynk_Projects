@@ -2,26 +2,258 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+
+#include <ESP8266mDNS.h>
+#include <ESP8266WebServer.h>
+
+#include <WiFiUdp.h>
+#include <time.h>
+#include <WiFiManager.h>
+#include <DNSServer.h>
+//#include <ArduinoOTA.h>
+#include <ArduinoJson.h> //https://github.com/bblanchon/ArduinoJson
+
 #include "setting.h" // 自定义的一些常量和配置
 
-// WiFi网络名称和密码
-const char *ssid = "WiFi_SSID";
-const char *password = "你的WiFi密码";
+#include <string>
+#include <stdlib.h>
 
-void get_v0(); // 获取第一个请求
-void get_v1(); // 获取第二个请求
-void get_v2(); // 获取第三个请求
-void get_v3(); // 获取第四个请求
+// 回调通知我们需要保存配置
+void saveConfigCallback()
+{
+  Serial.println("Should save config");
+  shouldSaveConfig = true;
+}
 
 void setup()
 {
-  Serial.begin(115200);           // 设置串口通信的波特率为115200
+  Serial.begin(115200); // 设置串口通信的波特率为115200
+  pinMode(SetPin, OUTPUT);
+  int SetPinState = digitalRead(SetPin);
   display.init();                 // 初始化显示器
   display.setI2cAutoInit(true);   // 开启I2C自动初始化
   display.flipScreenVertically(); // 翻转屏幕以正确显示
   display.clear();                // 清除屏幕上的内容
 
-  WiFi.begin(ssid, password); // 连接WiFi网络
+  // 读取FS json的配置
+  Serial.println("mounting FS...");
+  if (SPIFFS.begin())
+  {
+    Serial.println("mounted file system");
+    if (SPIFFS.exists("/config.json"))
+    {
+      // file exists, reading and loading
+      Serial.println("reading config file");
+      File configFile = SPIFFS.open("/config.json", "r");
+      if (configFile)
+      {
+        Serial.println("opened config file");
+        size_t size = configFile.size();
+        // Allocate a buffer to store contents of the file.
+        std::unique_ptr<char[]> buf(new char[size]);
+
+        configFile.readBytes(buf.get(), size);
+
+#ifdef ARDUINOJSON_VERSION_MAJOR >= 6
+        DynamicJsonDocument json(1024);
+        auto deserializeError = deserializeJson(json, buf.get());
+        serializeJson(json, Serial);
+        if (!deserializeError)
+        {
+#else
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject &json = jsonBuffer.parseObject(buf.get());
+        json.printTo(Serial);
+        if (json.success())
+        {
+#endif
+          Serial.println("\nparsed json");
+          blynk_server = json["blynk_server"].as<const char *>();
+          blynk_port = json["blynk_port"].as<const char *>();
+          blynk_token = json["blynk_token"].as<const char *>();
+        }
+        else
+        {
+          Serial.println("failed to load json config");
+        }
+        configFile.close();
+      }
+    }
+  }
+  else
+  {
+    Serial.println("failed to mount FS");
+  }
+  // end read
+
+  WiFiManagerParameter custom_blynk_server("server", "blynk server", blynk_server.c_str(), 40);
+  WiFiManagerParameter custom_blynk_port("port", "blynk port", blynk_port.c_str(), 6);
+  WiFiManagerParameter custom_blynk_token("blynk", "blynk token", blynk_token.c_str(), 32);
+  WiFiManagerParameter custom_text("<p>点击SSID名称选择连接WiFi,并输入密码/服务器地址/设备口令</p>");
+
+  // WiFiManager
+  // Local intialization. Once its business is done, there is no need to keep it around
+  WiFiManager wifiManager;
+
+  // set config save notify callback
+  wifiManager.setSaveConfigCallback(saveConfigCallback);
+
+  // add all your parameters here
+  wifiManager.addParameter(&custom_blynk_server);
+  wifiManager.addParameter(&custom_blynk_port);
+  wifiManager.addParameter(&custom_blynk_token);
+  wifiManager.addParameter(&custom_text);
+
+  // 设置静态IP
+  // wifiManager.setSTAStaticIPConfig(IPAddress(10,0,1,99), IPAddress(10,0,1,1), IPAddress(255,255,255,0));
+
+  // 在这里添加所有参数
+  // wifiManager.addParameter(&custom_blynk_token);
+
+  // 重置设置 - 用于测试
+  // wifiManager.resetSettings();
+
+  // 设置重置按钮的功能
+  if (SetPinState == HIGH)
+  {
+    Serial.println("Getting Reset ESP Wifi-Setting.......");
+    display.setFont(ArialMT_Plain_10);
+    display.clear();
+    display.drawXbm(35, 0, 60, 36, wifi_logo);
+    display.drawString(0, 40, "RESET mode activated .");
+    display.drawString(0, 50, "Please wait for reboot !");
+    display.display();
+    wifiManager.resetSettings();
+    delay(5000);
+    Serial.println("Formatting FS......");
+    SPIFFS.format();
+    delay(5000);
+    Serial.println("Done Reboot In 5 seconds");
+    display.setFont(ArialMT_Plain_16);
+    display.clear();
+    display.drawString(5, 25, "Reboot in 5 Sec !");
+    display.display();
+    delay(1000);
+
+    display.clear();
+    display.drawString(5, 25, "Reboot in 4 Sec !");
+    display.display();
+    delay(1000);
+
+    display.clear();
+    display.drawString(5, 25, "Reboot in 3 Sec !");
+    display.display();
+    delay(1000);
+
+    display.clear();
+    display.drawString(5, 25, "Reboot in 2 Sec !");
+    display.display();
+    delay(1000);
+
+    display.clear();
+    display.drawString(5, 25, "Reboot in 1 Sec !");
+    display.display();
+    delay(1000);
+
+    ESP.restart();
+  }
+
+  // 设置最低信号质量,如果信号质量低于8%,则略这些AP
+  // 默认值为:8%
+  // wifiManager.setMinimumSignalQuality();
+
+  // 设置超时直到配置关闭
+  // 有用的是让它全部重试或进入睡眠状态
+  // wifiManager.setTimeout(120);
+
+  // 获取ssid并传递并尝试连接
+  // 如果它没有连接，它将启动具有指定名称的访问点,"AutoConnectAP",并进入等待配置的阻塞循环
+  if (!wifiManager.autoConnect("Get_Blynk_API", ""))
+  {
+    Serial.println("failed to connect and hit timeout");
+    delay(3000);
+    // 重置并重试，或者让它深入睡眠
+    ESP.reset();
+    delay(1000);
+  }
+
+  // 如果已经连接
+  Serial.println("connected...yeey :)");
+
+  blynk_server = custom_blynk_server.getValue();
+  blynk_port = custom_blynk_port.getValue();
+  blynk_token = custom_blynk_token.getValue();
+  Serial.println("The values in the file are: ");
+  Serial.println("\tblynk_server: " + String(custom_blynk_server.getValue()));
+  Serial.println("\tblynk_port : " + String(custom_blynk_port.getValue()));
+  Serial.println("\tblynk_token : " + String(custom_blynk_token.getValue()));
+
+  if (shouldSaveConfig)
+  {
+    Serial.println("saving config");
+#ifdef ARDUINOJSON_VERSION_MAJOR >= 6
+    DynamicJsonDocument json(1024);
+#else
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject &json = jsonBuffer.createObject();
+#endif
+    json["blynk_server"] = blynk_server.c_str();
+    json["blynk_port"] = blynk_port.c_str();
+    json["blynk_token"] = blynk_token.c_str();
+
+    File configFile = SPIFFS.open("/config.json", "w");
+    if (!configFile)
+    {
+      Serial.println("failed to open config file for writing");
+    }
+
+#ifdef ARDUINOJSON_VERSION_MAJOR >= 6
+    serializeJson(json, Serial);
+    serializeJson(json, configFile);
+#else
+    json.printTo(Serial);
+    json.printTo(configFile);
+#endif
+    configFile.close();
+    // end save
+  }
+
+  Serial.println("local ip");
+  Serial.println(WiFi.localIP());
+
+  /*ArduinoOTA.setHostname("Get_Blynk_API");
+  ArduinoOTA.onStart([]()
+                     {
+      String type;
+      if (ArduinoOTA.getCommand() == U_FLASH) {
+        type = "sketch";
+      } else { // U_SPIFFS
+        type = "filesystem";
+      }
+      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+      Serial.println("Start updating " + type); });
+  ArduinoOTA.onEnd([]()
+                   { Serial.println("\nEnd"); });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total)
+                        { Serial.printf("Progress: %u%%\r", (progress / (total / 100))); });
+  ArduinoOTA.onError([](ota_error_t error)
+                     {
+      Serial.printf("Error[%u]: ", error);
+      if (error == OTA_AUTH_ERROR) {
+        Serial.println("Auth Failed");
+      } else if (error == OTA_BEGIN_ERROR) {
+        Serial.println("Begin Failed");
+      } else if (error == OTA_CONNECT_ERROR) {
+        Serial.println("Connect Failed");
+      } else if (error == OTA_RECEIVE_ERROR) {
+        Serial.println("Receive Failed");
+      } else if (error == OTA_END_ERROR) {
+        Serial.println("End Failed");
+      } });
+  ArduinoOTA.begin();*/
+  void OTA();
+
+  // WiFi.begin(ssid, password); // 连接WiFi网络
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(1000);
@@ -37,6 +269,7 @@ void setup()
 // 这个函数是主循环，用于调用四个函数来获取四个不同的值，并延时 3 秒，然后再获取下一个值。
 void loop()
 {
+  ArduinoOTA.handle();
   get_v0();
   delay(3000);
   get_v1();
@@ -58,7 +291,8 @@ void get_v0()
     HTTPClient http;
 
     // 发送GET请求
-    http.begin(String(url) + "/" + String(token) + "/get/" + String(pin_v0));
+    http.begin(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v0));
+
     int httpCode = http.GET();
     if (httpCode == HTTP_CODE_OK)
     {
@@ -71,7 +305,7 @@ void get_v0()
       String numberString = payload.substring(start, end);
       float number = numberString.toFloat();
       Serial.println(httpCode);
-      Serial.println("Temperature: " + String(number) + "\u00B0C");
+      Serial.println("Temperature: " + String(number) + "\u00B0C \n");
       display.clear();
       display.setTextAlignment(TEXT_ALIGN_LEFT);
       display.setFont(ArialMT_Plain_24);
@@ -82,7 +316,9 @@ void get_v0()
     }
     else
     {
+      // Serial.println(String(url) + "/" + String(token) + "/get/" + String(pin_v0));
       Serial.println("HTTP request failed");
+      Serial.println(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v0));
     }
 
     // 断开连接
@@ -97,7 +333,7 @@ void get_v1()
     HTTPClient http;
 
     // 发送GET请求
-    http.begin(String(url) + "/" + String(token) + "/get/" + String(pin_v1));
+    http.begin(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v0));
     int httpCode = http.GET();
     if (httpCode == HTTP_CODE_OK)
     {
@@ -110,7 +346,7 @@ void get_v1()
       String numberString = payload.substring(start, end);
       float number = numberString.toFloat();
       Serial.println(httpCode);
-      Serial.println("Humility: " + String(number) + "%");
+      Serial.println("Humility: " + String(number) + "% \n");
       display.clear();
       display.setTextAlignment(TEXT_ALIGN_LEFT);
       display.setFont(ArialMT_Plain_24);
@@ -136,7 +372,7 @@ void get_v2()
     HTTPClient http;
 
     // 发送GET请求
-    http.begin(String(url) + "/" + String(token) + "/get/" + String(pin_v2));
+    http.begin(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v0));
     int httpCode = http.GET();
     if (httpCode == HTTP_CODE_OK)
     {
@@ -149,7 +385,7 @@ void get_v2()
       String numberString = payload.substring(start, end);
       float number = numberString.toFloat();
       Serial.println(httpCode);
-      Serial.println("Pressure: " + String(number) + "hPa");
+      Serial.println("Pressure: " + String(number) + "hPa \n");
       display.clear();
       display.setTextAlignment(TEXT_ALIGN_LEFT);
       display.setFont(ArialMT_Plain_24);
@@ -175,7 +411,7 @@ void get_v3()
     HTTPClient http;
 
     // 发送GET请求
-    http.begin(String(url) + "/" + String(token) + "/get/" + String(pin_v3));
+    http.begin(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v0));
     int httpCode = http.GET();
     if (httpCode == HTTP_CODE_OK)
     {
@@ -188,7 +424,7 @@ void get_v3()
       String numberString = payload.substring(start, end);
       float number = numberString.toFloat();
       Serial.println(httpCode);
-      Serial.println("Illumination: " + String(number) + "lUX");
+      Serial.println("Illumination: " + String(number) + "lUX \n");
       display.clear();
       display.setTextAlignment(TEXT_ALIGN_LEFT);
       display.setFont(ArialMT_Plain_24);
