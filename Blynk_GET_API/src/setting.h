@@ -1,13 +1,12 @@
 #include <Wire.h>        // 引入I2C库
 #include "SSD1306Wire.h" // 引入OLED驱动库
 
-
 void get_v0(); // 获取第一个请求
 void get_v1(); // 获取第二个请求
 void get_v2(); // 获取第三个请求
 void get_v3(); // 获取第四个请求
 
-//void OTA();
+
 
 // 用于WiFiManager界面中的变量服务器域名、端口、口令
 std::string blynk_server;
@@ -15,6 +14,7 @@ std::string blynk_port;
 std::string blynk_token;
 
 const int SetPin = D3;
+
 bool shouldSaveConfig = false;
 
 String pin_v0 = "V0"; // 传感器V0引脚标识符

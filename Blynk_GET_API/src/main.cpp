@@ -7,7 +7,6 @@
 #include <ESP8266WebServer.h>
 
 #include <WiFiUdp.h>
-#include <time.h>
 #include <WiFiManager.h>
 #include <DNSServer.h>
 #include <ArduinoOTA.h>
@@ -17,6 +16,7 @@
 
 #include <string>
 #include <stdlib.h>
+
 
 // 回调通知我们需要保存配置
 void saveConfigCallback()
@@ -252,7 +252,6 @@ void setup()
       } });
   ArduinoOTA.begin();
 
-
   // WiFi.begin(ssid, password); // 连接WiFi网络
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -270,12 +269,16 @@ void setup()
 void loop()
 {
   ArduinoOTA.handle();
+
   get_v0();
   delay(3000);
+
   get_v1();
   delay(3000);
+
   get_v2();
   delay(3000);
+
   get_v3();
   delay(3000);
 }
