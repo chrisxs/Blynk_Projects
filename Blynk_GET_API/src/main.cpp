@@ -10,7 +10,7 @@
 #include <time.h>
 #include <WiFiManager.h>
 #include <DNSServer.h>
-//#include <ArduinoOTA.h>
+#include <ArduinoOTA.h>
 #include <ArduinoJson.h> //https://github.com/bblanchon/ArduinoJson
 
 #include "setting.h" // 自定义的一些常量和配置
@@ -221,7 +221,7 @@ void setup()
   Serial.println("local ip");
   Serial.println(WiFi.localIP());
 
-  /*ArduinoOTA.setHostname("Get_Blynk_API");
+  ArduinoOTA.setHostname("Get_Blynk_API");
   ArduinoOTA.onStart([]()
                      {
       String type;
@@ -250,8 +250,8 @@ void setup()
       } else if (error == OTA_END_ERROR) {
         Serial.println("End Failed");
       } });
-  ArduinoOTA.begin();*/
-  void OTA();
+  ArduinoOTA.begin();
+
 
   // WiFi.begin(ssid, password); // 连接WiFi网络
   while (WiFi.status() != WL_CONNECTED)
@@ -333,7 +333,7 @@ void get_v1()
     HTTPClient http;
 
     // 发送GET请求
-    http.begin(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v0));
+    http.begin(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v1));
     int httpCode = http.GET();
     if (httpCode == HTTP_CODE_OK)
     {
@@ -372,7 +372,7 @@ void get_v2()
     HTTPClient http;
 
     // 发送GET请求
-    http.begin(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v0));
+    http.begin(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v2));
     int httpCode = http.GET();
     if (httpCode == HTTP_CODE_OK)
     {
@@ -411,7 +411,7 @@ void get_v3()
     HTTPClient http;
 
     // 发送GET请求
-    http.begin(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v0));
+    http.begin(String(blynk_server.c_str()) + ":" + std::atoi(blynk_port.c_str()) + "/" + String(blynk_token.c_str()) + "/get/" + String(pin_v3));
     int httpCode = http.GET();
     if (httpCode == HTTP_CODE_OK)
     {
