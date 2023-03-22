@@ -17,7 +17,6 @@
 #include <string>
 #include <stdlib.h>
 
-
 // 回调通知我们需要保存配置
 void saveConfigCallback()
 {
@@ -129,7 +128,7 @@ void setup()
     SPIFFS.format();
     delay(5000);
     Serial.println("Done Reboot In 5 seconds");
-    display.setFont(ArialMT_Plain_16);
+    /*display.setFont(ArialMT_Plain_16);
     display.clear();
     display.drawString(5, 25, "Reboot in 5 Sec !");
     display.display();
@@ -153,8 +152,8 @@ void setup()
     display.clear();
     display.drawString(5, 25, "Reboot in 1 Sec !");
     display.display();
-    delay(1000);
-
+    delay(1000);*/
+    draw_countdown(); // 定义函数，用于绘制倒计时界面
     ESP.restart();
   }
 
@@ -168,6 +167,7 @@ void setup()
 
   // 获取ssid并传递并尝试连接
   // 如果它没有连接，它将启动具有指定名称的访问点,"AutoConnectAP",并进入等待配置的阻塞循环
+  draw_note();
   if (!wifiManager.autoConnect("Get_Blynk_API", ""))
   {
     Serial.println("failed to connect and hit timeout");
@@ -178,7 +178,9 @@ void setup()
   }
 
   // 如果已经连接
-  Serial.println("connected...yeey :)");
+  Serial.println("WiFi已经连接:)");
+  draw_done(); // 调用函数画图完成
+  delay(3000); // 延迟3秒
 
   blynk_server = custom_blynk_server.getValue();
   blynk_port = custom_blynk_port.getValue();
@@ -259,10 +261,8 @@ void setup()
     Serial.println("Connecting to WiFi..."); // 打印连接WiFi网络的提示信息
   }
   Serial.println("Connected to WiFi"); // 打印连接成功的提示信息
-
-  display.drawXbm(35, 0, 60, 36, wifi_logo); // 在屏幕上绘制WiFi图标
-  display.display();                         // 显示WiFi图标
-  delay(5000);                               // 延迟5秒
+  draw_info();                         // 调用自定义函数，绘制屏幕信息
+  delay(5000);                         // 延迟5秒
 }
 
 // 这个函数是主循环，用于调用四个函数来获取四个不同的值，并延时 3 秒，然后再获取下一个值。
