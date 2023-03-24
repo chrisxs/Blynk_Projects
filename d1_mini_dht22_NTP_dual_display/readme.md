@@ -1,3 +1,51 @@
+# D1 Mini（ESP8266）双显示屏时钟温度计
+
+## 使用方法
+1. 上传代码后第一次开机先做一次恢复设置：
+
+**防止没清理干净WiFi记录引起无法正常开机**
+
+```
+/*
+EEPROM Clear
+
+Sets all of the bytes of the EEPROM to 0.
+This example code is in the public domain.
+
+*/
+
+#include <EEPROM.h>
+
+void setup() {
+EEPROM.begin(512);
+// write a 0 to all 512 bytes of the EEPROM
+for (int i = 0; i < 512; i++) { EEPROM.write(i, 0); }
+
+// turn the LED on when we're done
+pinMode(13, OUTPUT);
+digitalWrite(13, HIGH);
+EEPROM.end();
+}
+
+void loop() {}
+```
+
+3. 在代码中分别设置好以下内容：
+```
+char auth[] = "你的Blynk token";
+char ssid[] = "你的WiFi_SSID";
+char pass[] = "你的WiFi密码";
+char blynk_server[] = "Blynk服务器路径";
+int blynk_port = 8080; //Blynk端口号
+char ntp_server[] = "time.windows.com"; //NTP服务器
+```
+
+### OTA方法：
+1. 在代码上传过并成功连接WiFi后，编译程序
+2. 在显示屏或者串口查看本机IP，浏览器输入该IP地址：`ip地址:8266/update`,选择`Firmware`然后选择文件
+3. 然后在项目目录路径下的：`.pio\build\d1_mini`找到`firmware.bin`二进制文件即可
+
+## 使用库：
 ```
 Platform espressif8266 @ 2.6.3 (required: espressif8266)
 ├── framework-arduinoespressif8266 @ 3.20704.0 (required: platformio/framework-arduinoespressif8266 @ ~3.20704.0)
@@ -13,3 +61,11 @@ Libraries
 ├── DHT sensor library @ 1.4.4 (required: adafruit/DHT sensor library @ ^1.4.4)
 └── ESP8266 and ESP32 OLED driver for SSD1306 displays @ 4.4.0 (required: thingpulse/ESP8266 and ESP32 OLED driver for SSD1306 displays @ ^4.4.0)
 ```
+## 更新日志：
+---
+
+2023年3月24日
+- 上传代码
+- 修改注释
+- 改用web方式OTA
+---

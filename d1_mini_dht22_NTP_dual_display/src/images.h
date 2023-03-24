@@ -1,14 +1,15 @@
 #include <Wire.h>
 #include "SSD1306Wire.h"
-void draw_time();
-void draw_DHT22();
 
+void draw_time();  // 声明绘制时间的函数
+void draw_DHT22(); // 声明绘制DHT22传感器数据的函数
 
-SSD1306Wire display(0x3c, D4, D3); // SCL,SDA
-SSD1306Wire display2(0x3c, D6, D5);
+SSD1306Wire display(0x3c, D4, D3);  // OLED屏幕1的I2C地址和引脚
+SSD1306Wire display2(0x3c, D6, D5); // OLED屏幕2的I2C地址和引脚
 
 #define WiFi_Logo_width 60
 #define WiFi_Logo_height 36
+// WiFi标志的二进制位数组，其中ProGMEM表示将数组存储在程序存储器中而不是在RAM中
 const uint8_t WiFi_Logo_bits[] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF8,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0xFF, 0x07, 0x00, 0x00, 0x00,
@@ -36,19 +37,18 @@ const uint8_t WiFi_Logo_bits[] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-
 void drawImageDemo()
 {
-  display2.clear();
-  display2.drawXbm(34, 5, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits);
-  display2.drawString(0, 40, "RSSI: " + String(WiFi.RSSI()) + " dB");
-  display2.drawString(0, 50, "MAC: " + String(WiFi.macAddress()));
-  display2.display();
-  display.clear();
-  display.setFont(ArialMT_Plain_10);
-  display.drawString(0, 0, "IP: " + String(WiFi.localIP().toString()));
-  display.drawString(0, 20, "Hostname: " + String(WiFi.hostname()));
-  display.drawString(0, 40, "SSId: " + String(WiFi.SSID()));
-  display.display();
-  delay(10000);
+  display2.clear();                                                           // 清除显示器
+  display2.drawXbm(34, 5, WiFi_Logo_width, WiFi_Logo_height, WiFi_Logo_bits); // 在坐标 (34, 5) 处绘制 WiFi_Logo_bits 图像
+  display2.drawString(0, 40, "RSSI: " + String(WiFi.RSSI()) + " dB");         // 在坐标 (0, 40) 处显示 WiFi 信号强度
+  display2.drawString(0, 50, "MAC: " + String(WiFi.macAddress()));            // 在坐标 (0, 50) 处显示 MAC 地址
+  display2.display();                                                         // 刷新显示器
+  display.clear();                                                            // 清除显示器
+  display.setFont(ArialMT_Plain_10);                                          // 设置字体
+  display.drawString(0, 0, "IP: " + String(WiFi.localIP().toString()));       // 在坐标 (0, 0) 处显示本地 IP 地址
+  display.drawString(0, 20, "Hostname: " + String(WiFi.hostname()));          // 在坐标 (0, 20) 处显示主机名
+  display.drawString(0, 40, "SSId: " + String(WiFi.SSID()));                  // 在坐标 (0, 40) 处显示 SSID
+  display.display();                                                          // 刷新显示器
+  delay(10000);                                                               // 延迟 10000 毫秒
 }
