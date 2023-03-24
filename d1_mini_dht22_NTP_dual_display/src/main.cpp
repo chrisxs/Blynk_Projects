@@ -15,12 +15,12 @@
 #include "OTA_setting.h"
 #include "webserial_setting.h"
 
-char auth[] = "你的Blynk_Token"; // Blynk Token
-char ssid[] = "你的WiFi_SSID";                          // WiFi名称
-char pass[] = "你的WiFi密码";                       // WiFi密码
-char blynk_server[] = "你的Blynk服务器路径";              // Blynk服务器路径
-int blynk_port = 8080;                            // Blynk端口号
-char ntp_server[] = "time.windows.com";           // NTP服务器
+char auth[] = "你的Blynk_Token";             // Blynk Token
+char ssid[] = "你的WiFi_SSID";               // WiFi名称
+char pass[] = "你的WiFi密码";                // WiFi密码
+char blynk_server[] = "你的Blynk服务器路径"; // Blynk服务器路径
+int blynk_port = 8080;                       // Blynk端口号
+char ntp_server[] = "time.windows.com";      // NTP服务器
 
 int timezone = 8 * 3600; // 设置时区，这里设置为东八区
 int dst = 0;
@@ -129,22 +129,22 @@ void setup()
 
 void loop()
 {
-  draw_time();                                                                              // 显示时间
-  draw_DHT22();                                                                             // 显示DHT22传感器数据
-  Blynk.run();                                                                              // 运行Blynk
-  timer.run();                                                                              // 运行Blynk定时器
-  Blynk.virtualWrite(V2, "IP地址: ", WiFi.localIP().toString());                            // 在Blynk app上显示本地IP地址
-  Blynk.virtualWrite(V3, "MAC地址: ", WiFi.macAddress());                                   // 在Blynk app上显示MAC地址
-  Blynk.virtualWrite(V4, "RSSI: ", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID());                // 在Blynk app上显示WiFi信号强度和SSID
- 
- ///web和物理串口打印IP、MAC、RSSI、SSID信息
-  WebSerial.println("IP地址: " + String(WiFi.localIP().toString()));                       
-  WebSerial.println("MAC地址: " + String(WiFi.macAddress()));                               
-  WebSerial.println("RSSI: " + String(WiFi.RSSI())+" " + "SSID: " + String(WiFi.SSID())); 
-  Serial.println("IP地址: " + String(WiFi.localIP().toString()));                       
-  Serial.println("MAC地址: " + String(WiFi.macAddress()));                               
-  Serial.println("RSSI: " + String(WiFi.RSSI())+" " + "SSID: " + String(WiFi.SSID())); 
-  delay(1000);                                                                              // 等待1秒
+  draw_time();                                                               // 显示时间
+  draw_DHT22();                                                              // 显示DHT22传感器数据
+  Blynk.run();                                                               // 运行Blynk
+  timer.run();                                                               // 运行Blynk定时器
+  Blynk.virtualWrite(V2, "IP地址: ", WiFi.localIP().toString());             // 在Blynk app上显示本地IP地址
+  Blynk.virtualWrite(V3, "MAC地址: ", WiFi.macAddress());                    // 在Blynk app上显示MAC地址
+  Blynk.virtualWrite(V4, "RSSI: ", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID()); // 在Blynk app上显示WiFi信号强度和SSID
+
+  /// web和物理串口打印IP、MAC、RSSI、SSID信息
+  WebSerial.println("IP地址: " + String(WiFi.localIP().toString()));
+  WebSerial.println("MAC地址: " + String(WiFi.macAddress()));
+  WebSerial.println("RSSI: " + String(WiFi.RSSI()) + " " + "SSID: " + String(WiFi.SSID()));
+  Serial.println("IP地址: " + String(WiFi.localIP().toString()));
+  Serial.println("MAC地址: " + String(WiFi.macAddress()));
+  Serial.println("RSSI: " + String(WiFi.RSSI()) + " " + "SSID: " + String(WiFi.SSID()));
+  delay(1000); // 等待1秒
 }
 
 void draw_time()
