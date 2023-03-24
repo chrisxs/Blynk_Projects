@@ -15,12 +15,12 @@
 #include "OTA_setting.h"
 #include "webserial_setting.h"
 
-char auth[] = "你的Blynk_Token";             // Blynk Token
-char ssid[] = "你的WiFi_SSID";               // WiFi名称
-char pass[] = "你的WiFi密码";                // WiFi密码
-char blynk_server[] = "你的Blynk服务器路径"; // Blynk服务器路径
-int blynk_port = 8080;                       // Blynk端口号
-char ntp_server[] = "time.windows.com";      // NTP服务器
+char auth[] = "你的Blynk_Token";        // Blynk Token
+char ssid[] = "你的WiFi_SSID";          // WiFi名称
+char pass[] = "你的WiFi密码";           // WiFi密码
+char blynk_server[] = "你的服务器路径"; // Blynk服务器路径
+int blynk_port = 8080;                  // Blynk端口号
+char ntp_server[] = "time.windows.com"; // NTP服务器
 
 int timezone = 8 * 3600; // 设置时区，这里设置为东八区
 int dst = 0;
@@ -42,8 +42,10 @@ void sendSensor()
   Blynk.virtualWrite(V1, h);       // 将湿度值写入虚拟引脚 V1
   Serial.println("温度：" + String(t));
   Serial.println("湿度：" + String(h));
+  Serial.println("blynk token: " + String(auth) + "\nssid: " + String(ssid) + "\nblynk_server: " + String(blynk_server) + "\nblynk_port:" + String(blynk_port));
   WebSerial.println("温度：" + String(t));
   WebSerial.println("湿度：" + String(h));
+  WebSerial.println("blynk token: " + String(auth) + "\nssid: " + String(ssid) + "\nblynk_server: " + String(blynk_server) + "\nblynk_port:" + String(blynk_port));
 }
 
 BLYNK_WRITE(V5)
@@ -119,6 +121,7 @@ void setup()
     delay(500);
     Serial.print("连接成功，IP地址: " + (String(WiFi.localIP().toString())));
     WebSerial.print("连接成功，IP地址: " + (String(WiFi.localIP().toString())));
+    WebSerial.println("blynk token: " + String(auth) + "\nssid: " + String(ssid) + "\nblynk_server: " + String(blynk_server) + "\nblynk_port:" + String(blynk_port));
   }
   else
   {
