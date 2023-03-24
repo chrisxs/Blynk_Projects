@@ -40,13 +40,17 @@ int blynk_port = 8080; //Blynk端口号
 char ntp_server[] = "time.windows.com"; //NTP服务器
 ```
 
-### OTA方法：
+## OTA方法：
 1. 在代码上传过并成功连接WiFi后，编译程序
 2. 在显示屏或者串口查看本机IP，浏览器输入该IP地址：`ip地址:8266/update`,选择`Firmware`然后选择文件
 3. 然后在项目目录路径下的：`.pio\build\d1_mini`找到`firmware.bin`二进制文件即可
 
+## WEB串口：
+- 在显示屏或者串口查看本机IP，浏览器输入该IP地址：ip地址:340/webserial
+
 ## 使用库：
 ```
+d1_mini dependencies...
 Platform espressif8266 @ 2.6.3 (required: espressif8266)
 ├── framework-arduinoespressif8266 @ 3.20704.0 (required: platformio/framework-arduinoespressif8266 @ ~3.20704.0)
 ├── tool-esptool @ 1.413.0 (required: platformio/tool-esptool @ <2)
@@ -56,14 +60,21 @@ Platform espressif8266 @ 2.6.3 (required: espressif8266)
 └── toolchain-xtensa @ 2.40802.200502 (required: platformio/toolchain-xtensa @ ~2.40802.0)
 
 Libraries
-├── Adafruit Unified Sensor @ 1.1.9 (required: adafruit/Adafruit Unified Sensor @ ^1.1.9)
-├── Blynk @ 1.2.0 (required: blynkkk/Blynk @ ^1.2.0)
-├── DHT sensor library @ 1.4.4 (required: adafruit/DHT sensor library @ ^1.4.4)
-└── ESP8266 and ESP32 OLED driver for SSD1306 displays @ 4.4.0 (required: thingpulse/ESP8266 and ESP32 OLED driver for SSD1306 displays @ ^4.4.0)
+├── Adafruit Unified Sensor @ 1.1.9 (required: adafruit/Adafruit Unified Sensor)
+├── AsyncElegantOTA @ 2.2.7 (required: ayushsharma82/AsyncElegantOTA)
+├── Blynk @ 1.2.0 (required: blynkkk/Blynk)
+├── DHT sensor library @ 1.4.4 (required: adafruit/DHT sensor library)
+├── ESP Async WebServer @ 1.2.3 (required: ESP Async WebServer)
+│   ├── AsyncTCP @ 1.1.1 (required: AsyncTCP)
+│   └── ESPAsyncTCP @ 1.2.2 (required: ESPAsyncTCP)
+├── ESP8266 and ESP32 OLED driver for SSD1306 displays @ 4.4.0 (required: thingpulse/ESP8266 and ESP32 OLED driver for SSD1306 displays)
+└── WebSerial @ 1.3.0 (required: ayushsharma82/WebSerial)
 ```
 ## 更新日志：
+2023年3月25日
+- 增加WEB OTA功能
+- 增加Web串口功能
 ---
-
 2023年3月24日
 - 上传代码
 - 修改注释

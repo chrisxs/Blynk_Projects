@@ -13,13 +13,14 @@
 
 #include "images.h"
 #include "OTA_setting.h"
+#include "webserial_setting.h"
 
-char auth[] = "你的Blynk token";         // Blynk Token
-char ssid[] = "你的WiFi_SSID";           // WiFi名称
-char pass[] = "你的WiFi密码";            // WiFi密码
-char blynk_server[] = "Blynk服务器路径"; // Blynk服务器路径
-int blynk_port = 8080;                   // Blynk端口号
-char ntp_server[] = "time.windows.com";  // NTP服务器
+char auth[] = "你的Blynk_Token"; // Blynk Token
+char ssid[] = "你的WiFi_SSID";                          // WiFi名称
+char pass[] = "你的WiFi密码";                       // WiFi密码
+char blynk_server[] = "你的Blynk服务器路径";              // Blynk服务器路径
+int blynk_port = 8080;                            // Blynk端口号
+char ntp_server[] = "time.windows.com";           // NTP服务器
 
 int timezone = 8 * 3600; // 设置时区，这里设置为东八区
 int dst = 0;
@@ -39,6 +40,10 @@ void sendSensor()
   float t = dht.readTemperature(); // 读取温度值
   Blynk.virtualWrite(V0, t);       // 将温度值写入虚拟引脚 V0
   Blynk.virtualWrite(V1, h);       // 将湿度值写入虚拟引脚 V1
+  Serial.println("温度：" + String(t));
+  Serial.println("湿度：" + String(h));
+  WebSerial.println("温度：" + String(t));
+  WebSerial.println("湿度：" + String(h));
 }
 
 BLYNK_WRITE(V5)
@@ -47,11 +52,15 @@ BLYNK_WRITE(V5)
   {
     display.displayOff();  // 关闭显示屏1
     display2.displayOff(); // 关闭显示屏2
+    Serial.println("屏幕已经关闭");
+    WebSerial.println("屏幕已经关闭");
   }
   else // 如果传入的参数值不为 0
   {
     display.displayOn();  // 打开显示屏1
     display2.displayOn(); // 打开显示屏2
+    Serial.println("屏幕已经开启");
+    WebSerial.println("屏幕已经开启");
   }
 }
 
@@ -64,6 +73,11 @@ void setup()
 {
   // 启动串口调试
   Serial.begin(115200);
+
+  WebSerial.begin(&serialserver);
+  WebSerial.msgCallback(recvMsg); // 附加反馈信息
+  serialserver.begin();           // serialserver启动
+  OTA();
 
   // 配置时间
   configTime(timezone, dst, ntp_server);
@@ -104,27 +118,33 @@ void setup()
     // 如果连接成功，打印IP地址
     delay(500);
     Serial.print("连接成功，IP地址: " + (String(WiFi.localIP().toString())));
+    WebSerial.print("连接成功，IP地址: " + (String(WiFi.localIP().toString())));
   }
   else
   {
     // 如果连接失败，打印错误信息
     Serial.print("WiFi连接失败");
   }
-
-  // 启动OTA功能
-  OTA();
 }
 
 void loop()
 {
-  draw_time();                                                               // 显示时间
-  draw_DHT22();                                                              // 显示DHT22传感器数据
-  Blynk.run();                                                               // 运行Blynk
-  timer.run();                                                               // 运行Blynk定时器
-  Blynk.virtualWrite(V2, "IP地址: ", WiFi.localIP().toString());             // 在Blynk app上显示本地IP地址
-  Blynk.virtualWrite(V3, "MAC地址: ", WiFi.macAddress());                    // 在Blynk app上显示MAC地址
-  Blynk.virtualWrite(V4, "RSSI: ", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID()); // 在Blynk app上显示WiFi信号强度和SSID
-  delay(1000);                                                               // 等待1秒
+  draw_time();                                                                              // 显示时间
+  draw_DHT22();                                                                             // 显示DHT22传感器数据
+  Blynk.run();                                                                              // 运行Blynk
+  timer.run();                                                                              // 运行Blynk定时器
+  Blynk.virtualWrite(V2, "IP地址: ", WiFi.localIP().toString());                            // 在Blynk app上显示本地IP地址
+  Blynk.virtualWrite(V3, "MAC地址: ", WiFi.macAddress());                                   // 在Blynk app上显示MAC地址
+  Blynk.virtualWrite(V4, "RSSI: ", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID());                // 在Blynk app上显示WiFi信号强度和SSID
+ 
+ ///web和物理串口打印IP、MAC、RSSI、SSID信息
+  WebSerial.println("IP地址: " + String(WiFi.localIP().toString()));                       
+  WebSerial.println("MAC地址: " + String(WiFi.macAddress()));                               
+  WebSerial.println("RSSI: " + String(WiFi.RSSI())+" " + "SSID: " + String(WiFi.SSID())); 
+  Serial.println("IP地址: " + String(WiFi.localIP().toString()));                       
+  Serial.println("MAC地址: " + String(WiFi.macAddress()));                               
+  Serial.println("RSSI: " + String(WiFi.RSSI())+" " + "SSID: " + String(WiFi.SSID())); 
+  delay(1000);                                                                              // 等待1秒
 }
 
 void draw_time()
