@@ -19,6 +19,10 @@
 #include <WEMOS_SHT3X.h>
 #include <BH1750FVI.h>
 
+#include <WiFiClient.h>
+#include <ESP8266WebServer.h>
+#include <ElegantOTA.h>
+
 #include <string>
 #include <stdlib.h>
 
@@ -29,7 +33,7 @@ BH1750FVI LightSensor(BH1750FVI::k_DevModeContLowRes);
 const int ResetButton = D5;
 const int LedPin = D4;
 int ResetButtonState = digitalRead(ResetButton);
-// int ResetButtonState = 0;
+// int ResetButtonState = HIGH;
 
 BlynkTimer timer;
 
@@ -38,7 +42,10 @@ std::string blynk_server;
 std::string blynk_port;
 std::string blynk_token;
 
+ESP8266WebServer OTAserver(8266);
+
 bool shouldSaveConfig = false;
+
 // 回调通知我们需要保存配置
 void saveConfigCallback()
 {
@@ -62,14 +69,15 @@ void sendSensor()
 
 void setup()
 {
+  digitalWrite(LedPin, HIGH);
+  pinMode(ResetButton, INPUT_PULLUP);
+
+  pinMode(LedPin, OUTPUT);
   Serial.begin(115200);
 
   bmp.begin();
   LightSensor.begin();
 
-  digitalWrite(LedPin, HIGH);
-  pinMode(ResetButton, INPUT);
-  pinMode(LedPin, OUTPUT);
   // 读取FS json的配置
   Serial.println("mounting FS...");
   if (SPIFFS.begin())
@@ -153,25 +161,12 @@ void setup()
   {
     Serial.println("Getting Reset ESP Wifi-Setting.......");
     digitalWrite(LedPin, LOW);
-    delay(3000);
-    digitalWrite(LedPin, HIGH);
-    delay(300);
-    digitalWrite(LedPin, LOW);
-    delay(3000);
-    digitalWrite(LedPin, HIGH);
-    delay(300);
-    digitalWrite(LedPin, LOW);
-    delay(3000);
-    digitalWrite(LedPin, HIGH);
     wifiManager.resetSettings();
-    delay(10000);
-
+    delay(5000);
     Serial.println("Formatting FS......");
     SPIFFS.format();
-
-    delay(10000);
+    delay(5000);
     Serial.println("Done Reboot In 5 seconds");
-    digitalWrite(LedPin, LOW);
     delay(5000);
     digitalWrite(LedPin, HIGH);
     ESP.restart();
@@ -279,11 +274,16 @@ void setup()
   Blynk.config(blynk_token.c_str(), blynk_server.c_str(), std::atoi(blynk_port.c_str()));
   timer.setInterval(1000L, sendSensor);
   ArduinoOTA.begin();
+  ElegantOTA.begin(&OTAserver); // Start ElegantOTA
+  OTAserver.begin();
+  OTAserver.on("/", []()
+               { OTAserver.send(200, "text/plain", "Hi! I am ESP8266."); });
 }
 
 void loop()
 {
   ArduinoOTA.handle();
+  OTAserver.handleClient();
   Blynk.run();
   timer.run();
   Blynk.virtualWrite(V4, "IP地址:", WiFi.localIP().toString());
