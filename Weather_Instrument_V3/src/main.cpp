@@ -230,7 +230,7 @@ void setup()
   // ArduinoOTA.setPort(8266);
 
   // 默认主机名为:esp8266-[ChipID]
-  ArduinoOTA.setHostname("4合1气象采集仪V3-29c5");
+  ArduinoOTA.setHostname("4合1气象采集仪V3-demo");
 
   // 默认情况下不验证
   // ArduinoOTA.setPassword("admin");
