@@ -5,12 +5,16 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
-
 #include <Adafruit_Si7021.h>
 #include <MAX44009.h>
 #include <BMx280I2C.h>
 #include <Wire.h>
 #include <SPI.h>
+
+#include "OTA_setting.h"
+void recvMsg(uint8_t *data, size_t len); // 声明一个函数 recvMsg，用于接收数据
+
+AsyncWebServer serialserver(340); // 创建一个名为 serialserver 的异步 Web 服务器，端口为 340
 
 #define I2C_ADDRESS 0x76
 
@@ -23,6 +27,8 @@ Adafruit_Si7021 sensor = Adafruit_Si7021();
 char auth[] = "73e65c339daa43dcb4ac653080dabac5";
 char ssid[] = "chrisxs_01";
 char pass[] = "aj20160223";
+char blynk_server[] = "chrisxs.com"; // Blynk服务器路径
+int blynk_port = 8080;               // Blynk端口号
 
 BlynkTimer timer;
 
@@ -34,14 +40,16 @@ void sendSensor()
     return;
   }
 
-  //wait for the measurement to finish
+  // wait for the measurement to finish
   do
   {
     delay(100);
   } while (!bmx280.hasValue());
 
-  Serial.print("Pressure: "); Serial.println(bmx280.getPressure());
-  Serial.print("Temperature: "); Serial.println(bmx280.getTemperature());
+  Serial.print("Pressure: ");
+  Serial.println(bmx280.getPressure());
+  Serial.print("Temperature: ");
+  Serial.println(bmx280.getTemperature());
 
   if (bmx280.isBME280())
   {
@@ -50,7 +58,7 @@ void sendSensor()
   }
 
   float h = sensor.readHumidity();
-  float t = sensor.readTemperature(); //dht.readTemperature(true)
+  float t = sensor.readTemperature(); // dht.readTemperature(true)
   float p = bmx280.getPressure();
   float l = light.get_lux();
   Blynk.virtualWrite(V0, t);
@@ -62,11 +70,16 @@ void sendSensor()
 void setup()
 {
   Serial.begin(115200);
+  WebSerial.begin(&serialserver);
+  WebSerial.msgCallback(recvMsg); // 附加反馈信息
+  serialserver.begin();           // serialserver启动
+  WiFi.hostname("北室外");
   Wire.begin();
   if (!bmx280.begin())
   {
     Serial.println("begin() failed. check your BMx280 Interface and I2C Address.");
-    while (1);
+    while (1)
+      ;
   }
 
   if (bmx280.isBME280())
@@ -74,87 +87,60 @@ void setup()
   else
     Serial.println("sensor is a BMP280");
 
-  //reset sensor to default parameters.
+  // reset sensor to default parameters.
   bmx280.resetToDefaults();
 
-  //by default sensing is disabled and must be enabled by setting a non-zero
-  //oversampling setting.
-  //set an oversampling setting for pressure and temperature measurements.
+  // by default sensing is disabled and must be enabled by setting a non-zero
+  // oversampling setting.
+  // set an oversampling setting for pressure and temperature measurements.
   bmx280.writeOversamplingPressure(BMx280MI::OSRS_P_x16);
   bmx280.writeOversamplingTemperature(BMx280MI::OSRS_T_x16);
 
-  //if sensor is a BME280, set an oversampling setting for humidity measurements.
+  // if sensor is a BME280, set an oversampling setting for humidity measurements.
   if (bmx280.isBME280())
     bmx280.writeOversamplingHumidity(BMx280MI::OSRS_H_x16);
 
-  //如果不适用WiFimanager,就必须使用WiFi.begin()函数来连接WiFi,不可以用blynk.begin,否则更改token后会导致无法OTA
+  // 如果不适用WiFimanager,就必须使用WiFi.begin()函数来连接WiFi,不可以用blynk.begin,否则更改token后会导致无法OTA
   WiFi.begin(ssid, pass);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+  while (WiFi.waitForConnectResult() != WL_CONNECTED)
+  {
     Serial.println("Connection Failed! Rebooting...");
     delay(5000);
     ESP.restart();
   }
 
-  ArduinoOTA.setHostname("北面阳台室外-V2");
-  ArduinoOTA.onStart([]() {
-    String type;
-    if (ArduinoOTA.getCommand() == U_FLASH)
-    {
-      type = "sketch";
-    }
-    else
-    { // U_SPIFFS
-      type = "filesystem";
-    }
-    // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-    Serial.println("Start updating " + type);
-  });
-  ArduinoOTA.onEnd([]() {
-    Serial.println("\nEnd");
-  });
-  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
-    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-  });
-
-  ArduinoOTA.onError([](ota_error_t error) {
-    Serial.printf("Error[%u]: ", error);
-    if (error == OTA_AUTH_ERROR)
-    {
-      Serial.println("Auth Failed");
-    }
-    else if (error == OTA_BEGIN_ERROR)
-    {
-      Serial.println("Begin Failed");
-    }
-    else if (error == OTA_CONNECT_ERROR)
-    {
-      Serial.println("Connect Failed");
-    }
-    else if (error == OTA_RECEIVE_ERROR)
-    {
-      Serial.println("Receive Failed");
-    }
-    else if (error == OTA_END_ERROR)
-    {
-      Serial.println("End Failed");
-    }
-  });
-
-  ArduinoOTA.begin();
   sensor.begin();
   light.begin();
-  Blynk.config(auth,IPAddress(121,4,166,72), 8080);
-  //Blynk.begin(auth, ssid, pass, IPAddress(121,40,178,75), 8080);
+  // Blynk.config(auth, IPAddress(xxx, xxx, xxx, xxx), 8080);
+  Blynk.begin(auth, ssid, pass, blynk_server, blynk_port);
   timer.setInterval(1000L, sendSensor);
+  OTA();
 }
-
 
 void loop()
 {
-  ArduinoOTA.handle();
   Blynk.run();
   timer.run();
   Blynk.virtualWrite(V4, "IP地址 :", WiFi.localIP().toString());
   Blynk.virtualWrite(V5, "MAC地址  :", WiFi.macAddress());
   Blynk.virtualWrite(V6, "RSSI:", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID());
+}
+
+void recvMsg(uint8_t *data, size_t len) // 接收数据的函数
+{
+  WebSerial.println("接收到数据..."); // 打印一条提示信息，表示已接收到数据
+  String d = "";                      // 创建一个空字符串变量 d，用于存储接收到的数据
+  for (int i = 0; i < len; i++)       // 循环读取接收到的数据
+  {
+    d += char(data[i]); // 将接收到的字节数据转换为字符并拼接到字符串变量 d 中
+  }
+  WebSerial.println(d); // 打印接收到的数据
+  /// 串口诊断命令,web串口收到“debug”就打印相关信息///
+  if (d == "debug")
+  {
+    WebSerial.println("\n收到debug命令\n");
+    WebSerial.println("blynk token: " + String(auth) + "\nssid: " + String(ssid) + "\nip: " + String(WiFi.localIP().toString()) + "\nblynk_server: " + String(blynk_server) + "\nblynk_port: " + String(blynk_port) + "\nhostname: " + String(WiFi.hostname()));
+    Serial.println("\n收到debug命令\n");
+    Serial.println("blynk token: " + String(auth) + "\nssid: " + String(ssid) + "\nip: " + String(WiFi.localIP().toString()) + "\nblynk_server: " + String(blynk_server) + "\nblynk_port: " + String(blynk_port) + "\nhostname: " + String(WiFi.hostname()));
+  }
 }
