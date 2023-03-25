@@ -38,8 +38,11 @@ void loop() {}
 2. 按下重置按钮`D5`，板载LED会亮起并闪耀，等待约30秒
 3. 用手机或者电脑连接名为：`4合1气象仪-demo`的WiFi热点，配置好里面的相关信息即可
 
-**目前Web OTA和Web 串口会跟WiFiManager有冲突，所以未加入**
+**目前~~Web OTA和~~Web 串口会跟WiFiManager有冲突，所以未加入**
 ## OTA方法：
+1. 在代码上传过并成功连接WiFi后，编译程序
+2. 在显示屏或者串口查看本机IP，浏览器输入该IP地址：`ip地址:8266/update`,选择`Firmware`然后选择文件
+3. 然后在项目目录路径下的：`.pio\build\d1_mini`找到`firmware.bin`二进制文件即可
 
 ## WEB串口：
 
