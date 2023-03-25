@@ -15,12 +15,12 @@
 #include "OTA_setting.h"
 #include "webserial_setting.h"
 
-char auth[] = "你的Blynk_Token";        // Blynk Token
-char ssid[] = "你的WiFi_SSID";          // WiFi名称
-char pass[] = "你的WiFi密码";           // WiFi密码
-char blynk_server[] = "你的服务器路径"; // Blynk服务器路径
-int blynk_port = 8080;                  // Blynk端口号
-char ntp_server[] = "time.windows.com"; // NTP服务器
+char auth[] = "你的Blynk_Token"; // Blynk Token
+char ssid[] = "你的WiFi_SSID";                          // WiFi名称
+char pass[] = "你的WiFi密码";                       // WiFi密码
+char blynk_server[] = "你的Blynk服务器路径";              // Blynk服务器路径
+int blynk_port = 8080;                            // Blynk端口号
+char ntp_server[] = "time.windows.com";           // NTP服务器
 
 int timezone = 8 * 3600; // 设置时区，这里设置为东八区
 int dst = 0;
@@ -40,12 +40,12 @@ void sendSensor()
   float t = dht.readTemperature(); // 读取温度值
   Blynk.virtualWrite(V0, t);       // 将温度值写入虚拟引脚 V0
   Blynk.virtualWrite(V1, h);       // 将湿度值写入虚拟引脚 V1
-  Serial.println("温度：" + String(t));
-  Serial.println("湿度：" + String(h));
-  Serial.println("blynk token: " + String(auth) + "\nssid: " + String(ssid) + "\nblynk_server: " + String(blynk_server) + "\nblynk_port:" + String(blynk_port));
-  WebSerial.println("温度：" + String(t));
-  WebSerial.println("湿度：" + String(h));
-  WebSerial.println("blynk token: " + String(auth) + "\nssid: " + String(ssid) + "\nblynk_server: " + String(blynk_server) + "\nblynk_port:" + String(blynk_port));
+
+  /*  ///web和物理串口打印信息///
+    Serial.println("温度：" + String(t));
+    Serial.println("湿度：" + String(h));
+    WebSerial.println("温度：" + String(t));
+    WebSerial.println("湿度：" + String(h));*/
 }
 
 BLYNK_WRITE(V5)
@@ -120,7 +120,7 @@ void setup()
     // 如果连接成功，打印IP地址
     delay(500);
     Serial.print("连接成功，IP地址: " + (String(WiFi.localIP().toString())));
-    WebSerial.print("连接成功，IP地址: " + (String(WiFi.localIP().toString())));
+    WebSerial.println("连接成功，IP地址: " + (String(WiFi.localIP().toString())));
     WebSerial.println("blynk token: " + String(auth) + "\nssid: " + String(ssid) + "\nblynk_server: " + String(blynk_server) + "\nblynk_port:" + String(blynk_port));
   }
   else
@@ -139,15 +139,6 @@ void loop()
   Blynk.virtualWrite(V2, "IP地址: ", WiFi.localIP().toString());             // 在Blynk app上显示本地IP地址
   Blynk.virtualWrite(V3, "MAC地址: ", WiFi.macAddress());                    // 在Blynk app上显示MAC地址
   Blynk.virtualWrite(V4, "RSSI: ", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID()); // 在Blynk app上显示WiFi信号强度和SSID
-
-  /// web和物理串口打印IP、MAC、RSSI、SSID信息
-  WebSerial.println("IP地址: " + String(WiFi.localIP().toString()));
-  WebSerial.println("MAC地址: " + String(WiFi.macAddress()));
-  WebSerial.println("RSSI: " + String(WiFi.RSSI()) + " " + "SSID: " + String(WiFi.SSID()));
-  Serial.println("IP地址: " + String(WiFi.localIP().toString()));
-  Serial.println("MAC地址: " + String(WiFi.macAddress()));
-  Serial.println("RSSI: " + String(WiFi.RSSI()) + " " + "SSID: " + String(WiFi.SSID()));
-  delay(1000); // 等待1秒
 }
 
 void draw_time()
@@ -205,4 +196,23 @@ void draw_DHT22()
   display2.drawString(99, 0, "C");                              // 显示温度单位
   display2.drawString(15, 35, "H: " + String(h, 1) + " % ");    // 显示湿度值
   display2.display();                                           // 显示在屏幕上
+}
+
+void recvMsg(uint8_t *data, size_t len) // 接收数据的函数
+{
+  WebSerial.println("接收到数据..."); // 打印一条提示信息，表示已接收到数据
+  String d = "";                      // 创建一个空字符串变量 d，用于存储接收到的数据
+  for (int i = 0; i < len; i++)       // 循环读取接收到的数据
+  {
+    d += char(data[i]); // 将接收到的字节数据转换为字符并拼接到字符串变量 d 中
+  }
+  WebSerial.println(d); // 打印接收到的数据
+  /// 串口诊断命令,web串口收到“debug”就打印相关信息///
+  if (d == "debug")
+  {
+    WebSerial.println("\n收到debug命令\n");
+    WebSerial.println("blynk token: " + String(auth) + "\nssid: " + String(ssid) + "\nip: " + String(WiFi.localIP().toString()) + "\nblynk_server: " + String(blynk_server) + "\nblynk_port: " + String(blynk_port));
+    Serial.println("\n收到debug命令\n");
+    Serial.println("blynk token: " + String(auth) + "\nssid: " + String(ssid) + "\nip: " + String(WiFi.localIP().toString()) + "\nblynk_server: " + String(blynk_server) + "\nblynk_port: " + String(blynk_port));
+  }
 }
