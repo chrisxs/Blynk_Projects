@@ -50,7 +50,7 @@ int blynk_port = 8080; //Blynk端口号
 3. 然后在项目目录路径下的：`.pio\build\d1_mini`找到`firmware.bin`二进制文件即可
 
 ## WEB串口：
-- 在显示屏或者串口查看本机IP，浏览器输入该IP地址：ip地址:340/webserial
+- 在显示屏或者串口查看本机IP，浏览器输入该IP地址：`ip地址:340/webserial`
 - 串口文本框中输入`debug`，然后点击`send`，即可显示WiFi_SSID等相关信息
 
 ## 使用库：
