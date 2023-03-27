@@ -72,6 +72,9 @@ Libraries
 └── WebSerial @ 1.3.0 (required: ayushsharma82/WebSerial)
 ```
 ## 更新日志：
+2023年3月28日
+- 优化代码
+---
 2023年3月25日
 - 增加WEB OTA功能
 - 增加Web串口功能
