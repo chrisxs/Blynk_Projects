@@ -7,8 +7,6 @@ char blynk_server[] = "";               // Blynk服务器路径
 int blynk_port = 8080;                  // Blynk端口号
 char ntp_server[] = "time.windows.com"; // NTP服务器
 
-void sendSensor(); // 发送传感器数据函数
-
 BlynkTimer timer;
 
 #define DHTPIN D2
