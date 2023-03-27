@@ -69,6 +69,9 @@ Libraries
 └── WiFiManager @ 0.16.0 (required: tzapu/WiFiManager)
 ```
 ## 更新日志：
+2023年3月27日2
+- 增加错误处理，防止在传感器松脱的情况下程序死机
+---
 2023年3月25日
 - 统一从ArduinoIDE转移到PlatformIO
 

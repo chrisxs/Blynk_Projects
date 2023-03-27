@@ -1,6 +1,8 @@
 #include <Wire.h>
 #include "SSD1306Wire.h"
 
+void drawImageDemo(); // 绘制图片演示函数
+
 void draw_time();  // 声明绘制时间的函数
 void draw_DHT22(); // 声明绘制DHT22传感器数据的函数
 
@@ -51,4 +53,49 @@ void drawImageDemo()
   display.drawString(0, 40, "SSId: " + String(WiFi.SSID()));                  // 在坐标 (0, 40) 处显示 SSID
   display.display();                                                          // 刷新显示器
   delay(10000);                                                               // 延迟 10000 毫秒
+}
+
+void draw_time()
+{
+  time_t now = time(nullptr);        // 获取当前时间
+  struct tm *p_tm = localtime(&now); // 将时间格式化为本地时间
+  display.clear();                   // 清空屏幕
+  display.setFont(ArialMT_Plain_24); // 设置字体大小
+
+  if (p_tm->tm_hour < 10) // 小时数小于10
+  {
+    display.drawString(15, 0, "0" + String(p_tm->tm_hour) + ":"); // 在屏幕上显示0+小时数
+  }
+  else
+  {
+    display.drawString(15, 0, String(p_tm->tm_hour) + ":"); // 在屏幕上显示小时数
+  }
+
+  if (p_tm->tm_min < 10) // 分钟数小于10
+  {
+    display.drawString(47, 0, "0" + String(p_tm->tm_min) + ":"); // 在屏幕上显示0+分钟数
+  }
+  else
+  {
+    display.drawString(47, 0, String(p_tm->tm_min) + ":"); // 在屏幕上显示分钟数
+  }
+
+  if (p_tm->tm_sec < 10) // 秒数小于10
+  {
+    display.drawString(81, 0, "0" + String(p_tm->tm_sec)); // 在屏幕上显示0+秒数
+  }
+  else
+  {
+    display.drawString(81, 0, String(p_tm->tm_sec)); // 在屏幕上显示秒数
+  }
+
+  if (p_tm->tm_mday < 10) // 日期数小于10
+  {
+    display.drawString(0, 35, String(p_tm->tm_year + 1900) + "-" + "0" + String(p_tm->tm_mon + 1) + "-" + "0" + String(p_tm->tm_mday)); // 在屏幕上显示年月日，日期数前加0
+  }
+  else
+  {
+    display.drawString(0, 35, String(p_tm->tm_year + 1900) + "-" + String(p_tm->tm_mon + 1) + "-" + String(p_tm->tm_mday)); // 在屏幕上显示年月日
+  }
+  display.display(); // 显示内容
 }

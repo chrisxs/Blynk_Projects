@@ -1,5 +1,5 @@
-#define BLYNK_PRINT Serial
-// #define BLYNK_DEBUG
+// #define BLYNK_PRINT Serial
+//  #define BLYNK_DEBUG
 #include <FS.h> //如果不正常就放到第一位
 #include <Arduino.h>
 #include <WiFiManager.h> //https://github.com/tzapu/WiFiManager
@@ -25,6 +25,8 @@
 
 #include <string>
 #include <stdlib.h>
+
+WidgetTerminal terminal(V7);
 
 Adafruit_BMP085 bmp;
 SHT3X sht30(0x44);
@@ -55,16 +57,45 @@ void saveConfigCallback()
 
 void sendSensor()
 {
-  sht30.get();
-  uint16_t lux = LightSensor.GetLightIntensity();
-  float h = sht30.humidity;
-  float t = sht30.cTemp;
-  float p = bmp.readPressure();
-  float l = lux;
-  Blynk.virtualWrite(V0, h);
-  Blynk.virtualWrite(V1, t);
-  Blynk.virtualWrite(V2, p / 100);
-  Blynk.virtualWrite(V3, l);
+  if (sht30.get() == 0)
+  {
+    float h = sht30.humidity;
+    float t = sht30.cTemp;
+    Blynk.virtualWrite(V0, h);
+    Blynk.virtualWrite(V1, t);
+  }
+  else
+  {
+    Serial.println("SHT3X Error!");
+    terminal.println("SHT3X Error!");
+  }
+
+  if (!bmp.begin())
+  {
+    Serial.println("BMP085 Error!");
+    terminal.println("BMP085 Error!");
+  }
+  else
+  {
+    float p = bmp.readPressure();
+    Blynk.virtualWrite(V2, p / 100);
+  }
+    uint16_t lux = LightSensor.GetLightIntensity();
+    float l = lux;
+    Blynk.virtualWrite(V3, l);
+}
+
+BLYNK_WRITE(V7)
+{
+
+  // if you type "Marco" into Terminal Widget - it will respond: "Polo:"
+  if (String("clear") == param.asStr())
+  {
+    terminal.clear();
+  }
+
+  // 确保所有内容都已发送
+  terminal.flush();
 }
 
 void setup()
@@ -74,7 +105,6 @@ void setup()
 
   pinMode(LedPin, OUTPUT);
   Serial.begin(115200);
-
   bmp.begin();
   LightSensor.begin();
 

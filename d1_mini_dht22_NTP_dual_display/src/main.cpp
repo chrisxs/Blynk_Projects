@@ -4,35 +4,22 @@
 
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
-#include <BlynkSimpleEsp8266.h>
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <DHT_U.h>
 
 #include <time.h>
 
-#include "images.h"
+#include "blynk_setting.h"
+#include "OLED_setting.h"
 #include "OTA_setting.h"
 #include "webserial_setting.h"
 
-char auth[] = "你的Blynk_Token"; // Blynk Token
-char ssid[] = "你的WiFi_SSID";                          // WiFi名称
-char pass[] = "你的WiFi密码";                       // WiFi密码
-char blynk_server[] = "你的Blynk服务器路径";              // Blynk服务器路径
-int blynk_port = 8080;                            // Blynk端口号
-char ntp_server[] = "time.windows.com";           // NTP服务器
 
 int timezone = 8 * 3600; // 设置时区，这里设置为东八区
 int dst = 0;
 
-#define DHTPIN D2
-#define DHTTYPE DHT22
-
 DHT dht(DHTPIN, DHTTYPE);
-BlynkTimer timer;
-
-void drawImageDemo(); // 绘制图片演示函数
-void sendSensor();    // 发送传感器数据函数
 
 void sendSensor()
 {
@@ -40,12 +27,16 @@ void sendSensor()
   float t = dht.readTemperature(); // 读取温度值
   Blynk.virtualWrite(V0, t);       // 将温度值写入虚拟引脚 V0
   Blynk.virtualWrite(V1, h);       // 将湿度值写入虚拟引脚 V1
+  
+  Blynk.virtualWrite(V2, "IP地址: ", WiFi.localIP().toString());             // 在Blynk app上显示本地IP地址
+  Blynk.virtualWrite(V3, "MAC地址: ", WiFi.macAddress());                    // 在Blynk app上显示MAC地址
+  Blynk.virtualWrite(V4, "RSSI: ", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID()); // 在Blynk app上显示WiFi信号强度和SSID
 
-  /*  ///web和物理串口打印信息///
-    Serial.println("温度：" + String(t));
-    Serial.println("湿度：" + String(h));
-    WebSerial.println("温度：" + String(t));
-    WebSerial.println("湿度：" + String(h));*/
+ ///web和物理串口打印信息///
+//    Serial.println("温度：" + String(t));
+//    Serial.println("湿度：" + String(h));
+//    WebSerial.println("温度：" + String(t));
+//    WebSerial.println("湿度：" + String(h));
 }
 
 BLYNK_WRITE(V5)
@@ -66,10 +57,7 @@ BLYNK_WRITE(V5)
   }
 }
 
-BLYNK_CONNECTED()
-{
-  Blynk.syncVirtual(V5); // 在连接 Blynk 服务器后同步虚拟引脚 V5
-}
+
 
 void setup()
 {
@@ -79,6 +67,7 @@ void setup()
   WebSerial.begin(&serialserver);
   WebSerial.msgCallback(recvMsg); // 附加反馈信息
   serialserver.begin();           // serialserver启动
+
   OTA();
 
   // 配置时间
@@ -132,59 +121,12 @@ void setup()
 
 void loop()
 {
-  draw_time();                                                               // 显示时间
-  draw_DHT22();                                                              // 显示DHT22传感器数据
-  Blynk.run();                                                               // 运行Blynk
-  timer.run();                                                               // 运行Blynk定时器
-  Blynk.virtualWrite(V2, "IP地址: ", WiFi.localIP().toString());             // 在Blynk app上显示本地IP地址
-  Blynk.virtualWrite(V3, "MAC地址: ", WiFi.macAddress());                    // 在Blynk app上显示MAC地址
-  Blynk.virtualWrite(V4, "RSSI: ", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID()); // 在Blynk app上显示WiFi信号强度和SSID
+  Blynk.run();  // 运行Blynk
+  timer.run();  // 运行Blynk定时器
+  draw_time();  // 显示时间
+  draw_DHT22(); // 显示DHT22传感器数据
 }
 
-void draw_time()
-{
-  time_t now = time(nullptr);        // 获取当前时间
-  struct tm *p_tm = localtime(&now); // 将时间格式化为本地时间
-  display.clear();                   // 清空屏幕
-  display.setFont(ArialMT_Plain_24); // 设置字体大小
-
-  if (p_tm->tm_hour < 10) // 小时数小于10
-  {
-    display.drawString(15, 0, "0" + String(p_tm->tm_hour) + ":"); // 在屏幕上显示0+小时数
-  }
-  else
-  {
-    display.drawString(15, 0, String(p_tm->tm_hour) + ":"); // 在屏幕上显示小时数
-  }
-
-  if (p_tm->tm_min < 10) // 分钟数小于10
-  {
-    display.drawString(47, 0, "0" + String(p_tm->tm_min) + ":"); // 在屏幕上显示0+分钟数
-  }
-  else
-  {
-    display.drawString(47, 0, String(p_tm->tm_min) + ":"); // 在屏幕上显示分钟数
-  }
-
-  if (p_tm->tm_sec < 10) // 秒数小于10
-  {
-    display.drawString(81, 0, "0" + String(p_tm->tm_sec)); // 在屏幕上显示0+秒数
-  }
-  else
-  {
-    display.drawString(81, 0, String(p_tm->tm_sec)); // 在屏幕上显示秒数
-  }
-
-  if (p_tm->tm_mday < 10) // 日期数小于10
-  {
-    display.drawString(0, 35, String(p_tm->tm_year + 1900) + "-" + "0" + String(p_tm->tm_mon + 1) + "-" + "0" + String(p_tm->tm_mday)); // 在屏幕上显示年月日，日期数前加0
-  }
-  else
-  {
-    display.drawString(0, 35, String(p_tm->tm_year + 1900) + "-" + String(p_tm->tm_mon + 1) + "-" + String(p_tm->tm_mday)); // 在屏幕上显示年月日
-  }
-  display.display(); // 显示内容
-}
 
 void draw_DHT22()
 {
