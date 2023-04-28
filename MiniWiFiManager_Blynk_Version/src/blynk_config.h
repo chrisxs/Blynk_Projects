@@ -119,8 +119,8 @@ void load_blynk_config()
         blynk_port = configFile.readStringUntil('\n').toInt();
         configFile.close();
         Serial.println("提取blynk.txt成功，内容:");
-        Serial.println("Blynk Token: " + blynk_token + ".");
-        Serial.println("Blynk Server: " + blynk_server + ".");
+        Serial.println("Blynk Token: " + blynk_token);
+        Serial.println("Blynk Server: " + blynk_server);
         Serial.println("Blyn Port: " + String(blynk_port));
         Serial.println();
     }
@@ -129,8 +129,8 @@ void load_blynk_config()
         Serial.println("当前设备blynk.txt不存在，无法提取内容\n");
     }
     Serial.println("当前Blynk连接参数如下：");
-    Serial.println("Blynk Token: " + blynk_token + ".");
-    Serial.println("Blynk Server: " + blynk_server + ".");
+    Serial.println("Blynk Token: " + blynk_token);
+    Serial.println("Blynk Server: " + blynk_server);
     Serial.println("Blyn Port: " + String(blynk_port));
     Serial.println();
     // Blynk.config(blynk_token.c_str(), blynk_server.c_str(), blynk_port);

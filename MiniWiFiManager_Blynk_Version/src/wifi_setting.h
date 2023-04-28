@@ -66,68 +66,6 @@ bool loadConfig();    // 声明读取WiFi凭据的函数
                 "</script>"
                 "</body></html>";
   server.send(200, "text/html", html); // 发送html页面到客户端
-}*/
-
-void handleRoot() {
-  String html = R"html(
-    <html>
-      <head>
-        <meta charset="UTF-8">
-        <style> body { text-align: center; } </style>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ESP8266 WiFi连接配置页面</title>
-        <h1>滑稽哥的mini WiFiManager!</h1>
-        <p>主页：chrisxs.com</p><br><br>
-        <img src='https://chrisxs.com/web-images/iot.png' style="width:20%;" /><br><br>
-        <a href='http://')+WiFi.localIP().toString()+R"html(:8266/update'>已连接WiFi的，点击此处更新固件</a><br><br>
-        <a href='http://")+WiFi.localIP().toString()+R"html(:8080'>已连接WiFi的，点击此处配置Blynk</a><br><br>
-        <a href='http://192.168.4.1:8266/update'>未连接WiFi的，点击此处更新固件</a><br><br>
-      </head>
-      <body>
-        <form method='post' action='/save'>
-          <label>WiFi SSID:</label>
-          <input type='text' name='ssid'><br>
-          <label>WiFi 密码:</label>
-          <input type='password' name='password'><br>
-          <input type='submit' value='保存'><br><br>
-          <input type='button' value='重启' onclick='restart()'>
-          <input type='button' value='清除WiFi凭据' onclick='clearCred()'>
-        </form>
-        <script>
-          function restart() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/restart", true);
-            xhr.onload = function() {
-              if (xhr.readyState === xhr.DONE) {
-                if (xhr.status === 200) {
-                  alert('重启成功！');
-                } else {
-                  alert('重启失败！');
-                }
-              }
-            };
-            xhr.send();
-          }
-          function clearCred() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/clear", true);
-            xhr.onload = function() {
-              if (xhr.readyState === xhr.DONE) {
-                if (xhr.status === 200) {
-                  alert('WiFi凭据清理成功！');
-                } else {
-                  alert('WiFi凭据清理失败！');
-                }
-              }
-            };
-            xhr.send();
-          }
-        </script>
-      </body>
-    </html>
-  )html";
-
-  server.send(200, "text/html", html);
 }
 
 
