@@ -32,7 +32,7 @@ void blynk_config_server_handleRoot()
     String html = "<html><head><meta charset=\"UTF-8\"><style> body { text-align: center; } </style></head><body>";
     html += "<h1>Blynk配置界面!</h1>";
     html += "<form action='/config' method='POST'>";
-    html += "<h1 for='token'>Blynk Token:</h1><br>";
+    html += "<label for='token'>Blynk Token</label><br>";
     html += "<input type='text' id='token' name='token' value='" + blynk_token + "'><br>";
     html += "<label for='server'>Blynk 服务器URL</label><br>";
     html += "<input type='text' id='server' name='server' value='" + blynk_server + "'><br>";
@@ -118,10 +118,11 @@ void load_blynk_config()
         // blynk_server.trim();
         blynk_port = configFile.readStringUntil('\n').toInt();
         configFile.close();
-        Serial.println("提取blynk.txt成功，内容:");
-        Serial.println("Blynk Token: " + blynk_token);
-        Serial.println("Blynk Server: " + blynk_server);
-        Serial.println("Blyn Port: " + String(blynk_port));
+        Serial.println("读取blynk.txt成功，文件中的内容如下:");
+        Serial.println(blynk_token);
+        Serial.println(blynk_server);
+        Serial.println(String(blynk_port));
+        Serial.println("Blynk配置服务启动成功");
         Serial.println();
     }
     else
@@ -142,6 +143,5 @@ void load_blynk_config()
     // blynk_config_server.on("/clear", blynk_config_server_handleClear);
 
     // blynk_config_server.begin();
-    Serial.println("Blynk配置服务启动成功");
     Serial.println();
 }

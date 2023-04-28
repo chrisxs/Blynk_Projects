@@ -1,5 +1,5 @@
 #define BLYNK_PRINT Serial
-#define BLYNK_DEBUG
+//#define BLYNK_DEBUG
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -21,8 +21,8 @@ BLYNK_WRITE(V10)
   }
   if (String("blynk") == param.asStr())
   {
-    terminal.println("Blynk Token: " + blynk_token + ".");
-    terminal.println("Blynk Server: " + blynk_server + ".");
+    terminal.println("Blynk Token: " + blynk_token);
+    terminal.println("Blynk Server: " + blynk_server);
     terminal.println("Blyn Port: " + String(blynk_port));
   }
   if (String("wifi") == param.asStr())
@@ -62,7 +62,7 @@ void setup()
     //    blynk_config_server.on("/clear", blynk_config_server_handleClear);
 
     //    blynk_config_server.begin();
-    Serial.println("设备处于 AP 模式,blynk服务停止");
+    Serial.println("设备处于 AP 模式,blynk服务暂停");
     Serial.println();
   }
   else

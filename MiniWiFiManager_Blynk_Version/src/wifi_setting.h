@@ -20,7 +20,7 @@ void handleRoot() {
                 "<title>ESP8266 WiFi连接配置页面</title>"
                 "<h1>滑稽哥的mini WiFiManager!</h1>" // 标题
                 "<p>主页：chrisxs.com</p><br><br>" // 网站链接
-                "<img src='https://chrisxs.com/web-images/iot.png' style=\"width:20%;\" /><br><br>" // 图片链接
+                "<img src='https://chrisxs.com/web-images/iot.png' style=\"width:20%;\" /><br><br>" // 图片链接，可有可无，方便用户诊断是否已经连接到公网
                 "<a href='http://" + WiFi.localIP().toString() + ":8266/update'>已连接WiFi的，点击此处更新固件</a><br><br>" // 连接WiFi后更新固件链接
                 "<a href='http://" + WiFi.localIP().toString() + ":8080'>已连接WiFi的，点击此处配置Blynk</a><br><br>" // 连接WiFi后更新固件链接
                 "<a href='http://192.168.4.1:8266/update'>未连接WiFi的，点击此处更新固件</a><br><br>" // 未连接WiFi更新固件链接
@@ -30,7 +30,7 @@ void handleRoot() {
                 "<input type='text' name='ssid'><br>"
                 "<label>WiFi 密码:</label>"
                 "<input type='password' name='password'><br>"
-                "<input type='submit' value='保存'><br><br>"
+                "<input type='submit' value='保存'><br>"
                 "<input type='button' value='重启' onclick='restart()'>" // 重启按钮，点击后调用 restart() 函数
                 "<input type='button' value='清除WiFi凭据' onclick='clearCred()'>" // 清除WiFi凭据按钮，点击后调用 clearCred() 函数
                 "</form>"
