@@ -1,7 +1,11 @@
 # D1 Mini（ESP8266）DHT22双显示屏时钟温度计 V2
 
+基于[MiniWiFiManager](https://github.com/chrisxs/Blynk_Projects/tree/main/MiniWiFiManager_Blynk_Version)写的程序，可以Web界面功能：OTA、AP配网、Blynk设置
+
 ## 使用方法
+
 1. 上传代码后第一次开机先做一次恢复设置：
+
 
 **防止没清理干净WiFi记录引起无法正常开机**
 
@@ -28,16 +32,6 @@ EEPROM.end();
 }
 
 void loop() {}
-```
-
-3. 在代码中分别设置好以下内容：
-```
-char auth[] = "你的Blynk token";
-char ssid[] = "你的WiFi_SSID";
-char pass[] = "你的WiFi密码";
-char blynk_server[] = "Blynk服务器路径";
-int blynk_port = 8080; //Blynk端口号
-char ntp_server[] = "time.windows.com"; //NTP服务器
 ```
 
 ## WiFi配置使用方法
