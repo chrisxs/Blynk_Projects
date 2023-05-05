@@ -1,8 +1,46 @@
-# MiniWiFiManager ESP8266WiFi配置程序（Blynk版本）
-
-尽量基于Arduino原生不依赖第三方库的WiFiManager，代码简单。比起WiFiManager，优点是轻便快速，可以随时设置WiFi连接。OTA功能未完成，暂时用ElegantOTA
+# D1 Mini（ESP8266）DHT22双显示屏时钟温度计 V2
 
 ## 使用方法
+1. 上传代码后第一次开机先做一次恢复设置：
+
+**防止没清理干净WiFi记录引起无法正常开机**
+
+```
+/*
+EEPROM Clear
+
+Sets all of the bytes of the EEPROM to 0.
+This example code is in the public domain.
+
+*/
+
+#include <EEPROM.h>
+
+void setup() {
+EEPROM.begin(512);
+// write a 0 to all 512 bytes of the EEPROM
+for (int i = 0; i < 512; i++) { EEPROM.write(i, 0); }
+
+// turn the LED on when we're done
+pinMode(13, OUTPUT);
+digitalWrite(13, HIGH);
+EEPROM.end();
+}
+
+void loop() {}
+```
+
+3. 在代码中分别设置好以下内容：
+```
+char auth[] = "你的Blynk token";
+char ssid[] = "你的WiFi_SSID";
+char pass[] = "你的WiFi密码";
+char blynk_server[] = "Blynk服务器路径";
+int blynk_port = 8080; //Blynk端口号
+char ntp_server[] = "time.windows.com"; //NTP服务器
+```
+
+## WiFi配置使用方法
 
 1. 写入程序后会新建一个名为：`ESP8266AP`的WiFi热点
 
@@ -11,6 +49,8 @@
 3. 预览：
 
 ![](https://github.com/chrisxs/Arduino_Cloud/blob/main/MiniWiFiManager/demo.png)
+
+4. 连接过WiFi后，随时可以更改WiFi连接信息。
 
 ## OTA方法：
 
@@ -24,24 +64,46 @@
 
 3. 按照指示做即可
 
-## 使用库
+**已保存的Blynk的信息不会被删除隐藏，用于方便校对信息和排查**
 
+## 使用库：
 ```
 d1_mini dependencies...
-Platform espressif8266 @ 2.6.3 (required: espressif8266)
-├── framework-arduinoespressif8266 @ 3.20704.0 (required: platformio/framework-arduinoespressif8266 @ ~3.20704.0)
+Platform espressif8266 @ 4.2.0 (required: espressif8266)
+├── framework-arduinoespressif8266 @ 3.30102.0 (required: platformio/framework-arduinoespressif8266 @ ~3.30102.0)
 ├── tool-esptool @ 1.413.0 (required: platformio/tool-esptool @ <2)
 ├── tool-esptoolpy @ 1.30000.201119 (required: platformio/tool-esptoolpy @ ~1.30000.0)
-├── tool-mklittlefs @ 1.203.210628 (required: platformio/tool-mklittlefs @ ~1.203.0)  
+├── tool-mklittlefs @ 1.203.210628 (required: platformio/tool-mklittlefs @ ~1.203.0)
 ├── tool-mkspiffs @ 1.200.0 (required: platformio/tool-mkspiffs @ ~1.200.0)
-└── toolchain-xtensa @ 2.40802.200502 (required: platformio/toolchain-xtensa @ ~2.40802.0)
+└── toolchain-xtensa @ 2.100300.220621 (required: platformio/toolchain-xtensa @ ~2.100300.0)
 
 Libraries
-├── Blynk @ 1.2.0 (required: blynkkk/Blynk @ ^1.2.0)
-└── ElegantOTA @ 2.2.9 (required: ayushsharma82/ElegantOTA)
-```
+├── Adafruit Unified Sensor @ 1.1.9 (required: adafruit/Adafruit Unified Sensor @ 1.1.9)
+├── Blynk @ 1.2.0 (required: blynkkk/Blynk @ 1.2.0)
+├── DHT sensor library @ 1.4.4 (required: adafruit/DHT sensor library @ 1.4.4)
+├── ESP8266 and ESP32 OLED driver for SSD1306 displays @ 4.4.0 (required: thingpulse/ESP8266 and ESP32 OLED driver for SSD1306 displays @ 4.4.0)
+└── ElegantOTA @ 2.2.9 (required: ayushsharma82/ElegantOTA @ 2.2.9)
+ *  终端将被任务重用，按任意键关闭。 
 
-## 更新日志
+ *  正在执行任务: C:\Users\chrisxs\.platformio\penv\Scripts\platformio.exe pkg list --environment d1_mini 
+
+Resolving d1_mini dependencies...
+Platform espressif8266 @ 4.2.0 (required: espressif8266)
+├── framework-arduinoespressif8266 @ 3.30102.0 (required: platformio/framework-arduinoespressif8266 @ ~3.30102.0)
+├── tool-esptool @ 1.413.0 (required: platformio/tool-esptool @ <2)
+├── tool-esptoolpy @ 1.30000.201119 (required: platformio/tool-esptoolpy @ ~1.30000.0)
+├── tool-mklittlefs @ 1.203.210628 (required: platformio/tool-mklittlefs @ ~1.203.0)
+├── tool-mkspiffs @ 1.200.0 (required: platformio/tool-mkspiffs @ ~1.200.0)
+└── toolchain-xtensa @ 2.100300.220621 (required: platformio/toolchain-xtensa @ ~2.100300.0)
+
+Libraries
+├── Adafruit Unified Sensor @ 1.1.9 (required: adafruit/Adafruit Unified Sensor @ 1.1.9)
+├── Blynk @ 1.2.0 (required: blynkkk/Blynk @ 1.2.0)
+├── DHT sensor library @ 1.4.4 (required: adafruit/DHT sensor library @ 1.4.4)
+├── ESP8266 and ESP32 OLED driver for SSD1306 displays @ 4.4.0 (required: thingpulse/ESP8266 and ESP32 OLED driver for SSD1306 displays @ 4.4.0)
+└── ElegantOTA @ 2.2.9 (required: ayushsharma82/ElegantOTA @ 2.2.9)
+```
+## 更新日志：
+2023年5月5日
+- 上传代码
 ---
-2023年3月28日
-- 上传
