@@ -10,9 +10,7 @@
 #include <time.h>
 
 #include "wifi_setting.h"
-
 #include "OLED_setting.h"
-
 #include "OTA_setting.h"
 #include "blynk_config.h"
 
