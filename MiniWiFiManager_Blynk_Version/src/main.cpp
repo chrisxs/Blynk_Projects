@@ -1,5 +1,5 @@
 #define BLYNK_PRINT Serial
-//#define BLYNK_DEBUG
+// #define BLYNK_DEBUG
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -13,12 +13,6 @@ WidgetTerminal terminal(V10);
 
 BLYNK_WRITE(V10)
 {
-
-  if (String("rm -rf /*") == param.asStr())
-  {
-    terminal.println("你是一个一个一个.......");
-    terminal.println("哼！哼！哼！啊啊啊啊啊啊啊啊啊啊！");
-  }
   if (String("blynk") == param.asStr())
   {
     terminal.println("Blynk Token: " + blynk_token);
@@ -30,6 +24,12 @@ BLYNK_WRITE(V10)
     terminal.println("SSID： " + WiFi.SSID());
     terminal.println("MAC： " + WiFi.macAddress());
     terminal.println("IP: " + WiFi.localIP().toString());
+    //terminal.println("RSSI: " + WiFi.RSSI().toString());
+    terminal.println("RSSI: " + String(WiFi.RSSI()));
+  }
+  if (String("reboot") == param.asStr())
+  {
+    ESP.restart();
   }
   if (String("clear") == param.asStr())
   {
@@ -57,11 +57,6 @@ void setup()
     server.on("/restart", HTTP_POST, handleRestart);
     server.on("/clear", HTTP_POST, handleClear);
     server.begin();
-    //    blynk_config_server.on("/", blynk_config_server_handleRoot);
-    //    blynk_config_server.on("/config", blynk_config_server_handleConfig);
-    //    blynk_config_server.on("/clear", blynk_config_server_handleClear);
-
-    //    blynk_config_server.begin();
     Serial.println("设备处于 AP 模式,blynk服务暂停");
     Serial.println();
   }

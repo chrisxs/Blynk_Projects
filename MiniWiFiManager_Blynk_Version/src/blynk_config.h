@@ -107,9 +107,6 @@ void load_blynk_config()
 {
     SPIFFS.begin();
     File configFile = SPIFFS.open("/blynk.txt", "r");
-    // Serial.println(blynk_token);
-    // Serial.println(blynk_server);
-    // Serial.println(blynk_port);
     if (configFile)
     {
         blynk_token = configFile.readStringUntil('\n');
