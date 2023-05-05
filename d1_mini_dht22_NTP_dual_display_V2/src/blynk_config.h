@@ -2,7 +2,7 @@
 
 ESP8266WebServer blynk_config_server(8080);
 
-// Default values for Blynk configuration
+// Blynk默认值
 String blynk_token;
 String blynk_server;
 int blynk_port;
