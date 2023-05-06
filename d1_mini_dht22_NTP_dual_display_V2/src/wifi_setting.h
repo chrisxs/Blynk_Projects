@@ -86,7 +86,7 @@ void handleRoot()
   server.send(200, "text/html", html); // 发送html页面到客户端
 }
 
-
+//主Web页面的多个写法，功能一样
 /*void handleRoot() {
   String html = "<html><head>"
                 "<meta charset=\"UTF-8\">"

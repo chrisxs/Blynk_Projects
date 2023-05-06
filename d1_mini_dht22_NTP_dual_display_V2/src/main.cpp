@@ -17,23 +17,6 @@
 
 #include <FS.h>
 
-/*DHT dht(D2, DHT22);
-
-
-
-
-void sendSensor()
-{
-  float h = dht.readHumidity();    // 读取湿度值
-  float t = dht.readTemperature(); // 读取温度值
-  Blynk.virtualWrite(V0, t);       // 将温度值写入虚拟引脚 V0
-  Blynk.virtualWrite(V1, h);       // 将湿度值写入虚拟引脚 V1
-
-  Blynk.virtualWrite(V2, "IP地址: ", WiFi.localIP().toString());             // 在Blynk app上显示本地IP地址
-  Blynk.virtualWrite(V3, "MAC地址: ", WiFi.macAddress());                    // 在Blynk app上显示MAC地址
-  Blynk.virtualWrite(V4, "RSSI: ", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID()); // 在Blynk app上显示WiFi信号强度和SSID
-}*/
-
 BLYNK_WRITE(V5)
 {
   if (param.asInt() == 0) // 如果传入的参数值为 0
@@ -49,36 +32,6 @@ BLYNK_WRITE(V5)
     Serial.println("屏幕已经开启");
   }
 }
-
-// 用于诊断
-
-/*BLYNK_WRITE(V10)
-{
-  if (String("blynk") == param.asStr())
-  {
-    terminal.println("Blynk Token: " + blynk_token);
-    terminal.println("Blynk Server: " + blynk_server);
-    terminal.println("Blyn Port: " + String(blynk_port));
-  }
-  if (String("wifi") == param.asStr())
-  {
-    terminal.println("SSID： " + WiFi.SSID());
-    terminal.println("MAC： " + WiFi.macAddress());
-    terminal.println("IP: " + WiFi.localIP().toString());
-    terminal.println("RSSI: " + String(WiFi.RSSI()));
-    terminal.println("NTP Server: " + String(ntp_server));
-
-  }
-  if (String("reboot") == param.asStr())
-  {
-    ESP.restart();
-  }
-  if (String("clear") == param.asStr())
-  {
-    terminal.clear();
-  }
-  terminal.flush();
-}*/
 
 void setup()
 {
@@ -182,7 +135,6 @@ void draw_DHT22()
   display2.clear();                                             // 清空显示屏2
   display2.setFont(ArialMT_Plain_24);                           // 设置字体大小
   display2.drawString(15, 0, "T: " + String(t, 1) + "\u00B0C"); // 显示温度值
-  // display2.drawString(99, 0, "C");                              // 显示温度单位
-  display2.drawString(15, 35, "H: " + String(h, 1) + " % "); // 显示湿度值
-  display2.display();                                        // 显示在屏幕上
+  display2.drawString(15, 35, "H: " + String(h, 1) + " % ");    // 显示湿度值
+  display2.display();                                           // 显示在屏幕上
 }
