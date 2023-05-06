@@ -8,8 +8,8 @@ int blynk_port;
 
 void blynk_config_server_handleRoot()
 {
-  const char *http_username = "blynk"; // 设置Blynk配置页面的账号名称
-  const char *http_password = "blynk"; // 设置Blynk配置页面的密码
+  const char *http_username = "admin"; // 设置Blynk配置页面的账号名称
+  const char *http_password = "admin"; // 设置Blynk配置页面的密码
 
   if (!blynk_config_server.authenticate(http_username, http_password))
   {
