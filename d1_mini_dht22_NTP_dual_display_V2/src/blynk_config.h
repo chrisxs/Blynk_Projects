@@ -40,11 +40,11 @@ BLYNK_WRITE(V10)
   }
   if (String("wifi") == param.asStr()) // 输入WiFi显示WiFi配置信息
   {
-    terminal.println("SSID： " + WiFi.SSID());
-    terminal.println("MAC： " + WiFi.macAddress());
-    terminal.println("IP: " + WiFi.localIP().toString());
-    terminal.println("RSSI: " + String(WiFi.RSSI()));
-    terminal.println("NTP 服务器: " + String(ntp_server));
+    terminal.println("WiFi SSID： " + WiFi.SSID());
+    terminal.println("MAC地址： " + WiFi.macAddress());
+    terminal.println("IP地址： " + WiFi.localIP().toString());
+    terminal.println("RSSI：" + String(WiFi.RSSI()));
+    terminal.println("NTP服务器：" + String(ntp_server));
   }
   if (String("reboot") == param.asStr()) // 输入reboot重启ESP8266
   {
@@ -173,7 +173,7 @@ void load_blynk_config()
     Serial.println(blynk_server);
     Serial.println(String(blynk_port));
     // Serial.println(ntp_server);
-    Serial.println("Blynk配置服务启动成功");
+    Serial.println("Blynk配置读取成功");
     Serial.println();
   }
   else

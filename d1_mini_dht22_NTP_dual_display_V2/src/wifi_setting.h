@@ -12,6 +12,7 @@ void handleRestart(); // 声明处理重启设备请求的函数
 void handleClear();   // 声明处理清除WiFi凭据请求的函数
 bool loadConfig();    // 声明读取WiFi凭据的函数
 
+
 void handleRoot()
 {
   // 获取用户名和密码
@@ -86,63 +87,6 @@ void handleRoot()
   server.send(200, "text/html", html); // 发送html页面到客户端
 }
 
-//主Web页面的多个写法，功能一样
-/*void handleRoot() {
-  String html = "<html><head>"
-                "<meta charset=\"UTF-8\">"
-                "<style> body { text-align: center; } </style>"
-                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
-                "<title>ESP8266 WiFi连接配置页面</title>"
-                "<h1>滑稽哥的mini WiFiManager!</h1>" // 标题
-                "<p>主页：chrisxs.com</p><br><br>" // 网站链接
-                "<img src='https://chrisxs.com/web-images/iot.png' style=\"width:20%;\" /><br><br>" // 图片链接，可有可无，方便用户诊断是否已经连接到公网
-                "<a href='http://" + WiFi.localIP().toString() + ":8266/update'>已连接WiFi的，点击此处更新固件</a><br><br>" // 连接WiFi后更新固件链接
-                "<a href='http://" + WiFi.localIP().toString() + ":8080'>已连接WiFi的，点击此处配置Blynk</a><br><br>" // 连接WiFi后更新固件链接
-                "<a href='http://192.168.4.1:8266/update'>未连接WiFi的，点击此处更新固件</a><br><br>" // 未连接WiFi更新固件链接
-                "</head><body>"
-                "<form method='post' action='/save'>" // 保存WiFi名称和密码
-                "<label>WiFi SSID:</label>"
-                "<input type='text' name='ssid'><br>"
-                "<label>WiFi 密码:</label>"
-                "<input type='password' name='password'><br>"
-                "<input type='submit' value='保存'><br>"
-                "<input type='button' value='重启' onclick='restart()'>" // 重启按钮，点击后调用 restart() 函数
-                "<input type='button' value='清除WiFi凭据' onclick='clearCred()'>" // 清除WiFi凭据按钮，点击后调用 clearCred() 函数
-                "</form>"
-                "<script>"
-                "function restart() {" // 重启函数
-                "var xhr = new XMLHttpRequest();"
-                "xhr.open(\"POST\", \"/restart\", true);"
-                "xhr.onload = function() {"
-                "if (xhr.readyState === xhr.DONE) {"
-                "if (xhr.status === 200) {"
-                "alert('重启成功！');" // 弹出成功提示
-                "} else {"
-                "alert('重启失败！');" // 弹出失败提示
-                "}"
-                "}"
-                "};"
-                "xhr.send();"
-                "}"
-                "function clearCred() {" // 清除WiFi凭据函数
-                "var xhr = new XMLHttpRequest();"
-                "xhr.open(\"POST\", \"/clear\", true);"
-                "xhr.onload = function() {"
-                "if (xhr.readyState === xhr.DONE) {"
-                "if (xhr.status === 200) {"
-                "alert('WiFi凭据清理成功！');" // 弹出成功提示
-                "} else {"
-                "alert('WiFi凭据清理失败！');" // 弹出失败提示
-                "}"
-                "}"
-                "};"
-                "xhr.send();"
-                "}"
-                "</script>"
-                "</body></html>";
-  server.send(200, "text/html", html); // 发送html页面到客户端
-}*/
-
 // 处理保存WiFi连接信息的请求
 void handleSave()
 {
@@ -207,6 +151,8 @@ bool loadConfig()
         if (WiFi.status() == WL_CONNECTED)
         {
           Serial.println("");
+          Serial.println("WiFi_SSID： " + ssid);
+          Serial.println("WiFi_密码： " + password);
           Serial.print("WiFi 已经连接, IP 地址: ");
           Serial.println(WiFi.localIP());
           return true;
