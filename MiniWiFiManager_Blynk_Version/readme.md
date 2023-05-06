@@ -1,6 +1,6 @@
 # MiniWiFiManager ESP8266WiFi配置程序（Blynk版本）
 
-尽量基于Arduino原生不依赖第三方库的WiFiManager，代码简单。比起WiFiManager，优点是轻便快速，可以随时设置WiFi连接。OTA功能未完成，暂时用ElegantOTA
+尽量基于Arduino原生不依赖第三方库的WiFiManager，代码简单。比起WiFiManager，优点是轻便快速，可以随时设置WiFi连接。OTA功能未完成，暂时用ElegantOTA，页面全部默认账号密码为：`admin`
 
 ## 使用方法
 
@@ -18,11 +18,47 @@
 
 ## Blynk配置方法
 
-1. 首选连接好WiFi（AP模式时候不可用）
+1. 首选连接好WiFi，点击`已连接WiFi的，点击此处配置Blynk`（AP模式时候不可用,但可以进入`ip:8080`）
 
 2. 浏览器地址栏输入本设备的`ip:8080`
 
 3. 按照指示做即可
+
+**已保存的Blynk的信息不会被删除隐藏，用于方便校对信息和排查**
+
+### 以上页面除了OTA页面外，都需要账号密码验证，通过修改文件更改密码,不需要密码可以直接注释掉：
+- 修改`wifi_setting.h`中的：
+
+```
+{
+  // 获取用户名和密码
+  const char *http_username = "admin";
+  const char *http_password = "admin";
+
+  // 检查是否提供了用户名和密码
+  if (!server.authenticate(http_username, http_password))
+  {
+    // 如果没有提供用户名和密码，则发送身份验证失败的响应
+    server.requestAuthentication();
+    return;
+  }
+  ```
+
+- 修改`blynk_config.h`中的:
+```
+  // 获取用户名和密码
+  const char *http_username = "admin";
+  const char *http_password = "admin";
+
+  // 检查是否提供了用户名和密码
+  if (!blynk_config_server.authenticate(http_username, http_password))
+  {
+    // 如果没有提供用户名和密码，则发送身份验证失败的响应
+    blynk_config_server.requestAuthentication();
+    return;
+  }
+  ```
+
 
 ## 使用库
 
@@ -42,6 +78,8 @@ Libraries
 ```
 
 ## 更新日志
+2023年5月6日
+- 增加Web页面密码访问验证功能
 ---
 2023年3月28日
 - 上传

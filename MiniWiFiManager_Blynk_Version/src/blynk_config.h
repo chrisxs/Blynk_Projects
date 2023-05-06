@@ -2,10 +2,53 @@
 
 ESP8266WebServer blynk_config_server(8080);
 
-// Default values for Blynk configuration
 String blynk_token;
 String blynk_server;
 int blynk_port;
+
+
+void blynk_config_server_handleRoot()
+{
+  const char *http_username = "admin";
+  const char *http_password = "admin";
+
+  if (!blynk_config_server.authenticate(http_username, http_password))
+  {
+    blynk_config_server.requestAuthentication();
+    return;
+  }
+
+  String html = R"HTML(
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <style> body { text-align: center; } </style>
+    </head>
+    <body>
+      <h1>Blynk配置界面!</h1>
+      <form action="/config" method="POST">
+        <label for="token">Blynk Token</label><br>
+        <input type="text" id="token" name="token" value="{TOKEN_VALUE}"><br>
+        <label for="server">Blynk 服务器URL</label><br>
+        <input type="text" id="server" name="server" value="{SERVER_VALUE}"><br>
+        <label for="port">Blynk 端口号</label><br>
+        <input type="text" id="port" name="port" value="{PORT_VALUE}"><br><br>
+        <input type="submit" value="保存">
+      </form><br>
+      <form action="/clear" method="POST">
+        <input type="submit" value="清除配置">
+      </form>
+    </body>
+    </html>
+  )HTML";
+
+  html.replace("{TOKEN_VALUE}", blynk_token);
+  html.replace("{SERVER_VALUE}", blynk_server);
+  html.replace("{PORT_VALUE}", String(blynk_port));
+
+  blynk_config_server.send(200, "text/html", html);
+}
+
 
 /*void blynk_config_server_handleRoot()
 {
@@ -27,8 +70,19 @@ int blynk_port;
 
 }*/
 
-void blynk_config_server_handleRoot()
+/*void blynk_config_server_handleRoot()
 {
+    // 获取用户名和密码
+    const char *http_username = "admin";
+    const char *http_password = "admin";
+
+    // 检查是否提供了用户名和密码
+    if (!blynk_config_server.authenticate(http_username, http_password))
+    {
+        // 如果没有提供用户名和密码，则发送身份验证失败的响应
+        blynk_config_server.requestAuthentication();
+        return;
+    }
     String html = "<html><head><meta charset=\"UTF-8\"><style> body { text-align: center; } </style></head><body>";
     html += "<h1>Blynk配置界面!</h1>";
     html += "<form action='/config' method='POST'>";
@@ -46,7 +100,7 @@ void blynk_config_server_handleRoot()
     html += "</body></html>";
 
     blynk_config_server.send(200, "text/html", html);
-}
+}*/
 
 void blynk_config_server_handleConfig()
 {
