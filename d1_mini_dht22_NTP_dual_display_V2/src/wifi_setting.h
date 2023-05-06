@@ -1,7 +1,7 @@
 #include <ESP8266WebServer.h>
 
-const char *ssid = "双显示屏时钟-DEMO"; // 创建一个热点，热点名称为"ESP8266AP"
-const char *password = "";      // 热点密码为空
+const char *ssid = "双显示屏时钟-DEMO";  // 创建一个热点，热点名称为"ESP8266AP"
+const char *password = "";              // 热点密码为空
 
 ESP8266WebServer server(80); // 创建一个Web服务器，端口号为80
 
@@ -12,7 +12,82 @@ void handleRestart(); // 声明处理重启设备请求的函数
 void handleClear();   // 声明处理清除WiFi凭据请求的函数
 bool loadConfig();    // 声明读取WiFi凭据的函数
 
-void handleRoot() {
+void handleRoot()
+{
+  // 获取用户名和密码
+  const char *http_username = "admin";
+  const char *http_password = "admin";
+
+  // 检查是否提供了用户名和密码
+  if (!server.authenticate(http_username, http_password))
+  {
+    // 如果没有提供用户名和密码，则发送身份验证失败的响应
+    server.requestAuthentication();
+    return;
+  }
+
+  // 授权通过，继续处理请求
+
+  String html = "<html><head>"
+                "<meta charset=\"UTF-8\">"
+                "<style> body { text-align: center; } </style>"
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+                "<title>ESP8266 WiFi连接配置页面</title>"
+                "<h1>滑稽哥的mini WiFiManager!</h1>"
+                "<p>主页：chrisxs.com</p><br><br>"
+                "<img src='https://chrisxs.com/web-images/iot.png' style=\"width:20%;\" /><br><br>"
+                "<a href='http://" +
+                WiFi.localIP().toString() + ":8266/update'>已连接WiFi的，点击此处更新固件</a><br><br>"
+                "<a href='http://" +
+                WiFi.localIP().toString() + ":8080'>已连接WiFi的，点击此处配置Blynk</a><br><br>"
+                "<a href='http://192.168.4.1:8266/update'>未连接WiFi的，点击此处更新固件</a><br><br>"
+                "</head><body>"
+                "<form method='post' action='/save'>"
+                "<label>WiFi SSID:</label>"
+                "<input type='text' name='ssid'><br>"
+                "<label>WiFi 密码:</label>"
+                "<input type='password' name='password'><br>"
+                "<input type='submit' value='保存'><br>"
+                "<input type='button' value='重启' onclick='restart()'>"
+                "<input type='button' value='清除WiFi凭据' onclick='clearCred()'>"
+                "</form>"
+                "<script>"
+                "function restart() {"
+                "var xhr = new XMLHttpRequest();"
+                "xhr.open('POST', '/restart', true);"
+                "xhr.onload = function() {"
+                "if (xhr.readyState === xhr.DONE) {"
+                "if (xhr.status === 200) {"
+                "alert('重启成功！');"
+                "} else {"
+                "alert('重启失败！');"
+                "}"
+                "}"
+                "};"
+                "xhr.send();"
+                "}"
+                "function clearCred() {"
+                "var xhr = new XMLHttpRequest();"
+                "xhr.open('POST', '/clear', true);"
+                "xhr.onload = function() {"
+                "if (xhr.readyState === xhr.DONE) {"
+                "if (xhr.status === 200) {"
+                "alert('WiFi凭据清理成功！');"
+                "} else {"
+                "alert('WiFi凭据清理失败！');"
+                "}"
+                "}"
+                "};"
+                "xhr.send();"
+                "}"
+                "</script>"
+                "</body></html>";
+
+  server.send(200, "text/html", html); // 发送html页面到客户端
+}
+
+
+/*void handleRoot() {
   String html = "<html><head>"
                 "<meta charset=\"UTF-8\">"
                 "<style> body { text-align: center; } </style>"
@@ -66,8 +141,7 @@ void handleRoot() {
                 "</script>"
                 "</body></html>";
   server.send(200, "text/html", html); // 发送html页面到客户端
-}
-
+}*/
 
 // 处理保存WiFi连接信息的请求
 void handleSave()

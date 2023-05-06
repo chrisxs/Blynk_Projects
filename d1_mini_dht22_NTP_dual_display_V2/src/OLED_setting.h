@@ -1,6 +1,9 @@
 #include <Wire.h>
 #include "SSD1306Wire.h"
 
+int timezone = 8 * 3600; // 设置时区，这里设置为东八区
+int dst = 0;
+
 void drawImageDemo(); // 绘制图片演示函数
 
 void draw_time();  // 声明绘制时间的函数
@@ -115,3 +118,4 @@ void draw_time()
   }
   display.display(); // 显示内容
 }
+

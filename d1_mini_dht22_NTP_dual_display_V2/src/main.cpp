@@ -3,6 +3,7 @@
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
+
 #include <Adafruit_Sensor.h>
 #include <DHT.h>
 #include <DHT_U.h>
@@ -16,11 +17,10 @@
 
 #include <FS.h>
 
-WidgetTerminal terminal(V10);
-DHT dht(DHTPIN, DHTTYPE);
+/*DHT dht(D2, DHT22);
 
-int timezone = 8 * 3600; // 设置时区，这里设置为东八区
-int dst = 0;
+
+
 
 void sendSensor()
 {
@@ -32,7 +32,7 @@ void sendSensor()
   Blynk.virtualWrite(V2, "IP地址: ", WiFi.localIP().toString());             // 在Blynk app上显示本地IP地址
   Blynk.virtualWrite(V3, "MAC地址: ", WiFi.macAddress());                    // 在Blynk app上显示MAC地址
   Blynk.virtualWrite(V4, "RSSI: ", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID()); // 在Blynk app上显示WiFi信号强度和SSID
-}
+}*/
 
 BLYNK_WRITE(V5)
 {
@@ -52,7 +52,7 @@ BLYNK_WRITE(V5)
 
 // 用于诊断
 
-BLYNK_WRITE(V10)
+/*BLYNK_WRITE(V10)
 {
   if (String("blynk") == param.asStr())
   {
@@ -65,8 +65,9 @@ BLYNK_WRITE(V10)
     terminal.println("SSID： " + WiFi.SSID());
     terminal.println("MAC： " + WiFi.macAddress());
     terminal.println("IP: " + WiFi.localIP().toString());
-    // terminal.println("RSSI: " + WiFi.RSSI().toString());
     terminal.println("RSSI: " + String(WiFi.RSSI()));
+    terminal.println("NTP Server: " + String(ntp_server));
+
   }
   if (String("reboot") == param.asStr())
   {
@@ -77,7 +78,7 @@ BLYNK_WRITE(V10)
     terminal.clear();
   }
   terminal.flush();
-}
+}*/
 
 void setup()
 {
@@ -130,7 +131,7 @@ void setup()
   {
     connectWiFi();
   }
-  OTA();
+  OTA(); // 不需要的话可以注释掉
   server.begin();
   server.on("/", handleRoot);
   server.on("/save", handleSave);
@@ -150,11 +151,11 @@ void setup()
     drawImageDemo();
     // 如果当前是 STA 模式，则执行 Blynk.config() 函数
     Blynk.config(blynk_token.c_str(), blynk_server.c_str(), blynk_port);
-    // 定时发送传感器数据
+    // terminal.clear();
+    //  定时发送传感器数据
     timer.setInterval(1000L, sendSensor);
     // 配置时间
     configTime(timezone, dst, ntp_server);
-    terminal.clear();
   }
 }
 
@@ -167,8 +168,6 @@ void loop()
   // 如果当前是 STA 模式，则执行 Blynk.config() 函数
   if (WiFi.getMode() == WIFI_STA)
   {
-    Blynk.run();
-    // terminal.println(Serial);
     Blynk.run();  // 运行Blynk
     timer.run();  // 运行Blynk定时器
     draw_time();  // 显示时间
@@ -183,8 +182,7 @@ void draw_DHT22()
   display2.clear();                                             // 清空显示屏2
   display2.setFont(ArialMT_Plain_24);                           // 设置字体大小
   display2.drawString(15, 0, "T: " + String(t, 1) + "\u00B0C"); // 显示温度值
-  display2.drawString(99, 0, "C");                              // 显示温度单位
-  display2.drawString(15, 35, "H: " + String(h, 1) + " % ");    // 显示湿度值
-  display2.display();                                           // 显示在屏幕上
+  // display2.drawString(99, 0, "C");                              // 显示温度单位
+  display2.drawString(15, 35, "H: " + String(h, 1) + " % "); // 显示湿度值
+  display2.display();                                        // 显示在屏幕上
 }
-
