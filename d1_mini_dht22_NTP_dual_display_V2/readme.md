@@ -1,6 +1,6 @@
 # D1 Mini（ESP8266）DHT22双显示屏时钟温度计 V2
 
-基于[MiniWiFiManager](https://github.com/chrisxs/Blynk_Projects/tree/main/MiniWiFiManager_Blynk_Version)写的程序，Web界面功能：OTA、AP配网、Blynk设置
+基于[MiniWiFiManager](https://github.com/chrisxs/Blynk_Projects/tree/main/MiniWiFiManager_Blynk_Version)写的程序，Web界面功能：OTA、AP配网、Blynk设置。不需要必须依赖Blynk才能运行，可以独立作为连接WiFi经过NTP校时后显示用。
 
 ## 使用方法
 

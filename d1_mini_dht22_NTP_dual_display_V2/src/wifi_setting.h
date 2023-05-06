@@ -34,7 +34,7 @@ void handleRoot()
                 "<style> body { text-align: center; } </style>"
                 "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
                 "<title>ESP8266 WiFi连接配置页面</title>"
-                "<h1>滑稽哥的mini WiFiManager!</h1>"
+                "<h1>双显示屏小时钟mini WiFiManager!</h1>"
                 "<p>主页：chrisxs.com</p><br><br>"
                 "<img src='https://chrisxs.com/web-images/iot.png' style=\"width:20%;\" /><br><br>"
                 "<a href='http://" +
