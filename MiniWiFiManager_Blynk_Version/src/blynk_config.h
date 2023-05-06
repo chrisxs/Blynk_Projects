@@ -6,11 +6,10 @@ String blynk_token;
 String blynk_server;
 int blynk_port;
 
-
 void blynk_config_server_handleRoot()
 {
-  const char *http_username = "admin";
-  const char *http_password = "admin";
+  const char *http_username = "blynk"; // 设置Blynk配置页面的账号名称
+  const char *http_password = "blynk"; // 设置Blynk配置页面的密码
 
   if (!blynk_config_server.authenticate(http_username, http_password))
   {
@@ -48,7 +47,6 @@ void blynk_config_server_handleRoot()
 
   blynk_config_server.send(200, "text/html", html);
 }
-
 
 /*void blynk_config_server_handleRoot()
 {
@@ -104,95 +102,95 @@ void blynk_config_server_handleRoot()
 
 void blynk_config_server_handleConfig()
 {
-    if (blynk_config_server.method() == HTTP_POST)
+  if (blynk_config_server.method() == HTTP_POST)
+  {
+    blynk_token = blynk_config_server.arg("token");
+    blynk_server = blynk_config_server.arg("server");
+    blynk_port = blynk_config_server.arg("port").toInt();
+    File configFile = SPIFFS.open("/blynk.txt", "w");
+    if (!configFile)
     {
-        blynk_token = blynk_config_server.arg("token");
-        blynk_server = blynk_config_server.arg("server");
-        blynk_port = blynk_config_server.arg("port").toInt();
-        File configFile = SPIFFS.open("/blynk.txt", "w");
-        if (!configFile)
-        {
-            Serial.println("文件写入失败");
-            Serial.println();
-        }
-        configFile.printf("%s\n", blynk_token.c_str());
-        configFile.printf("%s\n", blynk_server.c_str());
-        configFile.printf("%d\n", blynk_port);
-        configFile.close();
-        blynk_config_server.send(200, "text/html", "<meta charset=\"UTF-8\"><p>Blynk配置保存成功！稍后即将重启！</p>");
-        Serial.println("保存成功，你输入的是：");
-        Serial.println(blynk_token);
-        Serial.println(blynk_server);
-        Serial.println(blynk_port);
-        Serial.println("设备即将重启");
-        Serial.println();
-        delay(3000);
-        ESP.restart();
+      Serial.println("文件写入失败");
+      Serial.println();
     }
-    else
-    {
-        Serial.println("保存失败，你输入的是：");
-        Serial.println(blynk_token);
-        Serial.println(blynk_server);
-        Serial.println(blynk_port);
-        Serial.println();
-        blynk_config_server.send(400, "text/plain", "Invalid Request");
-    }
+    configFile.printf("%s\n", blynk_token.c_str());
+    configFile.printf("%s\n", blynk_server.c_str());
+    configFile.printf("%d\n", blynk_port);
+    configFile.close();
+    blynk_config_server.send(200, "text/html", "<meta charset=\"UTF-8\"><p>Blynk配置保存成功！稍后即将重启！</p>");
+    Serial.println("保存成功，你输入的是：");
+    Serial.println(blynk_token);
+    Serial.println(blynk_server);
+    Serial.println(blynk_port);
+    Serial.println("设备即将重启");
+    Serial.println();
+    delay(3000);
+    ESP.restart();
+  }
+  else
+  {
+    Serial.println("保存失败，你输入的是：");
+    Serial.println(blynk_token);
+    Serial.println(blynk_server);
+    Serial.println(blynk_port);
+    Serial.println();
+    blynk_config_server.send(400, "text/plain", "Invalid Request");
+  }
 }
 
 void blynk_config_server_handleClear()
 {
-    if (blynk_config_server.method() == HTTP_POST)
-    {
-        SPIFFS.remove("/blynk.txt");
-        blynk_config_server.send(200, "text/html", "<meta charset=\"UTF-8\"><p>Blynk配置已经清除！稍后将会重启！</p>");
-        Serial.println("Blynk配置已经清除！稍后将会重启！");
-        Serial.println();
-        delay(3000);
-        ESP.restart();
-    }
-    else
-    {
-        blynk_config_server.send(400, "text/plain", "Invalid Request");
-    }
+  if (blynk_config_server.method() == HTTP_POST)
+  {
+    SPIFFS.remove("/blynk.txt");
+    blynk_config_server.send(200, "text/html", "<meta charset=\"UTF-8\"><p>Blynk配置已经清除！稍后将会重启！</p>");
+    Serial.println("Blynk配置已经清除！稍后将会重启！");
+    Serial.println();
+    delay(3000);
+    ESP.restart();
+  }
+  else
+  {
+    blynk_config_server.send(400, "text/plain", "Invalid Request");
+  }
 }
 
 void load_blynk_config()
 {
-    SPIFFS.begin();
-    File configFile = SPIFFS.open("/blynk.txt", "r");
-    if (configFile)
-    {
-        blynk_token = configFile.readStringUntil('\n');
-        // blynk_token.trim();
-        blynk_server = configFile.readStringUntil('\n');
-        // blynk_server.trim();
-        blynk_port = configFile.readStringUntil('\n').toInt();
-        configFile.close();
-        Serial.println("读取blynk.txt成功，文件中的内容如下:");
-        Serial.println(blynk_token);
-        Serial.println(blynk_server);
-        Serial.println(String(blynk_port));
-        Serial.println("Blynk配置服务启动成功");
-        Serial.println();
-    }
-    else
-    {
-        Serial.println("当前设备blynk.txt不存在，无法提取内容\n");
-    }
-    Serial.println("当前Blynk连接参数如下：");
-    Serial.println("Blynk Token: " + blynk_token);
-    Serial.println("Blynk Server: " + blynk_server);
-    Serial.println("Blyn Port: " + String(blynk_port));
+  SPIFFS.begin();
+  File configFile = SPIFFS.open("/blynk.txt", "r");
+  if (configFile)
+  {
+    blynk_token = configFile.readStringUntil('\n');
+    // blynk_token.trim();
+    blynk_server = configFile.readStringUntil('\n');
+    // blynk_server.trim();
+    blynk_port = configFile.readStringUntil('\n').toInt();
+    configFile.close();
+    Serial.println("读取blynk.txt成功，文件中的内容如下:");
+    Serial.println(blynk_token);
+    Serial.println(blynk_server);
+    Serial.println(String(blynk_port));
+    Serial.println("Blynk配置服务启动成功");
     Serial.println();
-    // Blynk.config(blynk_token.c_str(), blynk_server.c_str(), blynk_port);
+  }
+  else
+  {
+    Serial.println("当前设备blynk.txt不存在，无法提取内容\n");
+  }
+  Serial.println("当前Blynk连接参数如下：");
+  Serial.println("Blynk Token: " + blynk_token);
+  Serial.println("Blynk Server: " + blynk_server);
+  Serial.println("Blyn Port: " + String(blynk_port));
+  Serial.println();
+  // Blynk.config(blynk_token.c_str(), blynk_server.c_str(), blynk_port);
 
-    // Blynk.config(blynk_token.c_str(), "chrisxs.com", blynk_port);
+  // Blynk.config(blynk_token.c_str(), "chrisxs.com", blynk_port);
 
-    // blynk_config_server.on("/", blynk_config_server_handleRoot);
-    // blynk_config_server.on("/config", blynk_config_server_handleConfig);
-    // blynk_config_server.on("/clear", blynk_config_server_handleClear);
+  // blynk_config_server.on("/", blynk_config_server_handleRoot);
+  // blynk_config_server.on("/config", blynk_config_server_handleConfig);
+  // blynk_config_server.on("/clear", blynk_config_server_handleClear);
 
-    // blynk_config_server.begin();
-    Serial.println();
+  // blynk_config_server.begin();
+  Serial.println();
 }
