@@ -247,122 +247,6 @@ void load_blynk_config()
 }
 */
 
-/*void dht22() //使用Google Charts JS（偶尔会被BAN）
-{
-  if (server.uri() != "/dht22")
-  {
-    server.send(404, "text/plain", "Not Found");
-    return;
-  }
-  float temperature = dht.readTemperature();
-  float humidity = dht.readHumidity();
-
-  String html = "<html><head><meta charset=\"UTF-8\">";
-  html += "<style>";
-  html += "html, body {";
-  html += "height: 100%;";
-  html += "display: flex;";
-  html += "flex-direction: column;";
-  html += "justify-content: center;";
-  html += "align-items: center;";
-  html += "}";
-  html += "#chart_div {";
-  html += "position: relative;";
-  html += "left: 50px;"; // 调整仪表版的水平位置
-  html += "}";
-  html += "</style>";
-  html += "<h2>Blynk版本DHT22双显示屏小时钟WEB诊断页面</h2>";
-  html += "<script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>";
-  html += "<script type=\"text/javascript\">";
-  html += "google.charts.load('current', {packages:['gauge']});";
-  html += "google.charts.setOnLoadCallback(drawChart);";
-  html += "function drawChart() {";
-  html += "var data = google.visualization.arrayToDataTable([";
-  html += "['Label', 'Value'],";
-  html += "['温度', " + String(temperature) + "],";
-  html += "['湿度', " + String(humidity) + "]";
-  html += "]);";
-  html += "var options = {";
-  html += "width: 400, height: 120,";
-  html += "redFrom: 90, redTo: 100,";
-  html += "yellowFrom:75, yellowTo: 90,";
-  html += "minorTicks: 5";
-  html += "};";
-  html += "var chart = new google.visualization.Gauge(document.getElementById('chart_div'));";
-  html += "chart.draw(data, options);";
-  html += "}";
-  html += "</script>";
-  html += "</head><body>";
-  html += "<h2>温度和湿度</h2>";
-  html += "<div id=\"chart_div\"></div>";
-  html += "<p>温度：" + String(temperature) + "\u00B0C</p>";
-  html += "<p>湿度：" + String(humidity) + "%</p>";
-  html += "<p>WiFi SSID：" + WiFi.SSID() + "</p>";
-  html += "<p>IP地址：" + WiFi.localIP().toString() + "</p>";
-  html += "<p>RSSI：" + String(WiFi.RSSI()) + "db</p>";
-  html += "</body></html>";
-
-  server.send(200, "text/html", html);
-}*/
-
-/*void dht22() // 使用SPIFF内置的Google Charts JS
-{
-  if (server.uri() != "/dht22")
-  {
-    server.send(404, "text/plain", "Not Found");
-    return;
-  }
-  float temperature = dht.readTemperature();
-  float humidity = dht.readHumidity();
-
-  String html = "<html><head><meta charset=\"UTF-8\">";
-  html += "<style>";
-  html += "html, body {";
-  html += "height: 100%;";
-  html += "display: flex;";
-  html += "flex-direction: column;";
-  html += "justify-content: center;";
-  html += "align-items: center;";
-  html += "}";
-  html += "#chart_div {";
-  html += "position: relative;";
-  html += "left: 50px;"; // 调整仪表版的水平位置
-  html += "}";
-  html += "</style>";
-  html += "<h2>Blynk版本DHT22双显示屏小时钟WEB诊断页面</h2>";
-  html += "<script type=\"text/javascript\" src=\"/loader.js\"></script>"; // 修改这里的路径
-  html += "<script type=\"text/javascript\">";
-  html += "google.charts.load('current', {packages:['gauge']});";
-  html += "google.charts.setOnLoadCallback(drawChart);";
-  html += "function drawChart() {";
-  html += "var data = google.visualization.arrayToDataTable([";
-  html += "['Label', 'Value'],";
-  html += "['温度', " + String(temperature) + "],";
-  html += "['湿度', " + String(humidity) + "]";
-  html += "]);";
-  html += "var options = {";
-  html += "width: 400, height: 120,";
-  html += "redFrom: 90, redTo: 100,";
-  html += "yellowFrom:75, yellowTo: 90,";
-  html += "minorTicks: 5";
-  html += "};";
-  html += "var chart = new google.visualization.Gauge(document.getElementById('chart_div'));";
-  html += "chart.draw(data, options);";
-  html += "}";
-  html += "</script>";
-  html += "</head><body>";
-  html += "<h2>温度和湿度</h2>";
-  html += "<div id=\"chart_div\"></div>";
-  html += "<p>温度：" + String(temperature) + "\u00B0C</p>";
-  html += "<p>湿度：" + String(humidity) + "%</p>";
-  html += "<p>WiFi SSID：" + WiFi.SSID() + "</p>";
-  html += "<p>IP地址：" + WiFi.localIP().toString() + "</p>";
-  html += "<p>RSSI：" + String(WiFi.RSSI()) + "db</p>";
-  html += "</body></html>";
-
-  server.send(200, "text/html", html);
-}*/
-
 void dht22()
 {
   if (server.uri() != "/dht22")
@@ -389,10 +273,10 @@ void dht22()
   html += "</style>";
   html += "<h2>Blynk版本DHT22双显示屏小时钟WEB诊断页面</h2>";
 
-  // 默认是使用内置SPIFFS
+  // 默认是使用内置SPIFFS，使用前先输把loader.js刷入SPIFFS
   html += "<script type=\"text/javascript\" src=\"/loader.js\"></script>";
 
-  // 使用Google Charts JS（偶尔会被BAN），使用前先输把loader.js刷入SPIFFS
+  // 使用Google Charts JS（偶尔会被BAN）
   // html += "<script type=\"text/javascript\" src=\"https://www.gstatic.com/charts/loader.js\"></script>";
   html += "<script type=\"text/javascript\">";
   html += "google.charts.load('current', {packages:['gauge']});";
@@ -404,11 +288,17 @@ void dht22()
   html += "]);";
   html += "var optionsTemp = {";
   html += "width: 200, height: 120,";
-  html += "isStacked: true,";
-  html += "redFrom: 35, redTo: 40,";
+  html += "redFrom: 35, redTo: 80,";
   html += "yellowFrom: 26, yellowTo: 35,";
-  html += "minorTicks: 5";
+  html += "minorTicks: 5,";
+  html += "min: -20,";
+  html += "max: 80";
   html += "};";
+  html += "var formatterTemp = new google.visualization.NumberFormat({";
+  html += "suffix: ' °C',";
+  html += "fractionDigits: 1";
+  html += "});";
+  html += "formatterTemp.format(dataTemp, 1);";
   html += "var chartTemp = new google.visualization.Gauge(document.getElementById('chart_temp_div'));";
   html += "chartTemp.draw(dataTemp, optionsTemp);";
 
@@ -418,21 +308,27 @@ void dht22()
   html += "]);";
   html += "var optionsHumidity = {";
   html += "width: 200, height: 120,";
-  html += "isStacked: true,";
   html += "redFrom: 90, redTo: 100,";
   html += "yellowFrom: 75, yellowTo: 90,";
-  html += "minorTicks: 5";
+  html += "minorTicks: 5,";
+  html += "max: 100"; // 设置湿度仪表盘的最大值为100
   html += "};";
+  html += "var formatterHumidity = new google.visualization.NumberFormat({";
+  html += "suffix: ' %',";
+  html += "fractionDigits: 0";
+  html += "});";
+  html += "formatterHumidity.format(dataHumidity, 1);";
   html += "var chartHumidity = new google.visualization.Gauge(document.getElementById('chart_humidity_div'));";
   html += "chartHumidity.draw(dataHumidity, optionsHumidity);";
   html += "}";
+
   html += "</script>";
   html += "</head><body>";
   html += "<h2>温度和湿度</h2>";
   html += "<div id=\"chart_temp_div\"></div>";
   html += "<div id=\"chart_humidity_div\"></div>";
-  html += "<p>温度：" + String(temperature) + "\u00B0C</p>";
-  html += "<p>湿度：" + String(humidity) + "%</p>";
+  html += "<p>温度：" + String(temperature, 1) + "\u00B0C</p>";
+  html += "<p>湿度：" + String(humidity, 0) + "%</p>";
   html += "<p>WiFi SSID：" + WiFi.SSID() + "</p>";
   html += "<p>IP地址：" + WiFi.localIP().toString() + "</p>";
   html += "<p>RSSI：" + String(WiFi.RSSI()) + "db</p>";
@@ -453,7 +349,8 @@ void serveChartsLoader()
   file.close();
 }
 
-/*void dht22()  //使用使用百度ECharts JS库，仪表盘在电脑页面大小显示不正常
+//如果被墙可以用这个，使用百度ECharts JS库，仪表盘在电脑页面大小显示不正常
+/*void dht22()  
 {
   if (server.uri() != "/dht22")
   {
