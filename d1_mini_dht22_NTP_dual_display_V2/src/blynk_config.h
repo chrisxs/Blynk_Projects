@@ -405,8 +405,8 @@ void dht22()
   html += "var optionsTemp = {";
   html += "width: 200, height: 120,";
   html += "isStacked: true,";
-  html += "redFrom: 90, redTo: 100,";
-  html += "yellowFrom: 75, yellowTo: 90,";
+  html += "redFrom: 35, redTo: 40,";
+  html += "yellowFrom: 26, yellowTo: 35,";
   html += "minorTicks: 5";
   html += "};";
   html += "var chartTemp = new google.visualization.Gauge(document.getElementById('chart_temp_div'));";
