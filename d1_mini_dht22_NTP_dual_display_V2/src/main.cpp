@@ -72,6 +72,8 @@ void setup()
     delay(1000);
     OTA();
     server.on("/", handleRoot);
+    server.on("/dht22", dht22); 
+    server.on("/loader.js", HTTP_GET, serveChartsLoader);
     server.on("/save", handleSave);
     server.on("/restart", HTTP_POST, handleRestart);
     server.on("/clear", HTTP_POST, handleClear);
@@ -87,6 +89,8 @@ void setup()
   OTA(); // 不需要的话可以注释掉
   server.begin();
   server.on("/", handleRoot);
+  server.on("/dht22", dht22); 
+  server.on("/loader.js", HTTP_GET, serveChartsLoader);
   server.on("/save", handleSave);
   server.on("/restart", HTTP_POST, handleRestart);
   server.on("/clear", HTTP_POST, handleClear);
@@ -117,6 +121,8 @@ void loop()
   server.handleClient();
   OTAserver.handleClient();
   blynk_config_server.handleClient();
+  //float temperature = dht.readTemperature();
+  //float humidity = dht.readHumidity();
 
   // 如果当前是 STA 模式，则执行 Blynk.config() 函数
   if (WiFi.getMode() == WIFI_STA)

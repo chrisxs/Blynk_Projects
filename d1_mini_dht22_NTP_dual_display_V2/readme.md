@@ -113,6 +113,9 @@ Libraries
 └── ElegantOTA @ 2.2.9 (required: ayushsharma82/ElegantOTA @ 2.2.9)
 ```
 ## 更新日志：
+2023年5月13日
+- 加入web后台诊断界面
+---
 2023年5月6日
 - 增加Web页面访问密码功能
 ---
