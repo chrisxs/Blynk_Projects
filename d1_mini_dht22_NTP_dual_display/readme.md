@@ -1,34 +1,14 @@
 # D1 Mini（ESP8266）DHT22双显示屏时钟温度计
 
 ## 使用方法
-1. 上传代码后第一次开机先做一次恢复设置：
-
-**防止没清理干净WiFi记录引起无法正常开机**
-
-```
-/*
-EEPROM Clear
-
-Sets all of the bytes of the EEPROM to 0.
-This example code is in the public domain.
-
-*/
-
-#include <EEPROM.h>
-
-void setup() {
-EEPROM.begin(512);
-// write a 0 to all 512 bytes of the EEPROM
-for (int i = 0; i < 512; i++) { EEPROM.write(i, 0); }
-
-// turn the LED on when we're done
-pinMode(13, OUTPUT);
-digitalWrite(13, HIGH);
-EEPROM.end();
-}
-
-void loop() {}
-```
+ 1. 第一次开机先做一次恢复出厂，清空flash，防止如果系统不断崩溃并且无法上传新代码，清除不再需要的数据和其他应用程序。这里用esptool工具：  
+   1.1. `pip install esptool`，安装`esptool`  
+   1.2. `python -m esptool`测试运行  
+   1.3. 把ESP8266或者32连接到你的电脑进入flash模式（按不同板子操作不同，有些板子不需要如D1 Mini，具体百度）  
+   1.4. 按自己板子类型运行：  
+    ESP8266：`python -m esptool --chip esp8266 erase_flash`  
+    ESP32：`python -m esptool --chip esp32 erase_flash`  
+   1.5. 留意提示，等待重启
 
 3. 在代码中分别设置好以下内容：
 ```
