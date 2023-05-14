@@ -2,6 +2,15 @@
 
 尽量基于Arduino原生不依赖第三方库的WiFiManager，代码简单。比起WiFiManager，优点是轻便快速，可以随时设置WiFi连接。OTA功能未完成，暂时用ElegantOTA，页面全部默认账号密码为：`admin`
 
+ 第一次开机先做一次恢复出厂，清空flash，防止如果系统不断崩溃并且无法上传新代码，清除不再需要的数据和其他应用程序。这里用esptool工具：  
+   1.1. `pip install esptool`，安装`esptool`  
+   1.2. `python -m esptool`测试运行  
+   1.3. 把ESP8266或者32连接到你的电脑进入flash模式（按不同板子操作不同，有些板子不需要如D1 Mini，具体百度）  
+   1.4. 按自己板子类型运行：  
+    ESP8266：`python -m esptool --chip esp8266 erase_flash`  
+    ESP32：`python -m esptool --chip esp32 erase_flash`  
+   1.5. 留意提示，等待重启
+
 ## 使用方法
 
 1. 写入程序后会新建一个名为：`ESP8266AP`的WiFi热点
