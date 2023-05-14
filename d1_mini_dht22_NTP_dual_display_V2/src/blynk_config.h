@@ -49,6 +49,8 @@ BLYNK_WRITE(V10)
     terminal.println("IP地址： " + WiFi.localIP().toString());
     terminal.println("RSSI：" + String(WiFi.RSSI()));
     terminal.println("NTP服务器：" + String(ntp_server));
+    float cpuFreq = ESP.getCpuFreqMHz();
+    terminal.print("当前CPU频率 " + String(cpuFreq));
   }
 
   // 输入reboot重启ESP8266
