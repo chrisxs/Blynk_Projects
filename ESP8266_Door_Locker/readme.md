@@ -26,7 +26,7 @@ void setup()
 1.3. 把ESP8266或者32连接到你的电脑进入flash模式（按不同板子操作不同，有些板子不需要如D1 Mini，具体百度）  
 1.4. 按自己板子类型运行：
    - ESP8266：`python -m esptool --chip esp8266 erase_flash`
-   - ESP32：`python -m esptool --chip esp32 erase_flash`
+   - ESP32：`python -m esptool --chip esp32 erase_flash`  
 1.5. 留意提示，等待重启
 
 ## WiFi配置使用方法
