@@ -7,31 +7,15 @@
     1.2. 出现带有WiFi图标的提示后，等待重置即可
 
 **如果仍然开不了机，并且串口查看信息是不断重复开机码的，可以试试以下代码，清理eeprom。（之前用过WiFiManager没清理干净WiFi记录的可能会有这情况）**
+1. 上传代码后第一次开机先做一次恢复出厂，清空flash，防止如果系统不断崩溃并且无法上传新代码，清除不再需要的数据和其他应用程序。这里用esptool工具：  
+   1.1. `pip install esptool`，安装`esptool`  
+   1.2. `python -m esptool`测试运行  
+   1.3. 把ESP8266或者32连接到你的电脑进入flash模式（按不同板子操作不同，有些板子不需要如D1 Mini，具体百度）  
+   1.4. 按自己板子类型运行：  
+    ESP8266：`python -m esptool --chip esp8266 erase_flash`  
+    ESP32：`python -m esptool --chip esp32 erase_flash`  
+   1.5. 留意提示，等待重启
 
-```
-/*
-EEPROM Clear
-
-Sets all of the bytes of the EEPROM to 0.
-This example code is in the public domain.
-
-*/
-
-#include <EEPROM.h>
-
-void setup() {
-EEPROM.begin(512);
-// write a 0 to all 512 bytes of the EEPROM
-for (int i = 0; i < 512; i++) { EEPROM.write(i, 0); }
-
-// turn the LED on when we're done
-pinMode(13, OUTPUT);
-digitalWrite(13, HIGH);
-EEPROM.end();
-}
-
-void loop() {}
-```
 
 4. 用浏览器验证API，地址栏输入：`https://你的域名:blynk端口号/你的设备token/get/v0`,成功的话会返回V0上的数值如：`["25.870"]`
 
