@@ -242,7 +242,6 @@ void load_blynk_config()
   html += "<p>IP地址：" + WiFi.localIP().toString() + "</p>";
   html += "<p>MCA地址：" + WiFi.macAddress() + "</p>";
   html += "<p>RSSI：" + String(WiFi.RSSI()) + "db</p>";
-  html += "<p>NTP服务器：" + String(ntp_server)  + "db</p>";
   html += "</body></html>";
 
   server.send(200, "text/html", html);
@@ -273,9 +272,7 @@ void dht22()
   html += "left: 50px;"; // 调整仪表版的水平位置
   html += "}";
   html += "</style>";
-
-  html += "<h1>Blynk版本DHT22双显示屏小时钟</h1>";
-  html += "<h2>Web诊断页面</h2>";
+  html += "<h2>Blynk版本DHT22双显示屏小时钟WEB诊断页面</h2>";
 
   // 默认是使用内置SPIFFS，使用前先输把loader.js刷入SPIFFS
   html += "<script type=\"text/javascript\" src=\"/loader.js\"></script>";
@@ -291,7 +288,7 @@ void dht22()
   html += "['温度', " + String(temperature) + "]";
   html += "]);";
   html += "var optionsTemp = {";
-  html += "width: 1000, height: 120,";
+  html += "width: 200, height: 120,";
   html += "redFrom: 35, redTo: 80,";
   html += "yellowFrom: 26, yellowTo: 35,";
   html += "minorTicks: 5,";
@@ -311,7 +308,7 @@ void dht22()
   html += "['湿度', " + String(humidity) + "]";
   html += "]);";
   html += "var optionsHumidity = {";
-  html += "width: 1000, height: 120,";
+  html += "width: 200, height: 120,";
   html += "redFrom: 90, redTo: 100,";
   html += "yellowFrom: 75, yellowTo: 90,";
   html += "minorTicks: 5,";
@@ -325,21 +322,18 @@ void dht22()
   html += "var chartHumidity = new google.visualization.Gauge(document.getElementById('chart_humidity_div'));";
   html += "chartHumidity.draw(dataHumidity, optionsHumidity);";
   html += "}";
+
   html += "</script>";
   html += "</head><body>";
-  html += "<h3>温度和湿度</h3>";
-  html += "<div style=\"display: flex;\">"; // 使用 flexbox 布局
-  html += "<div id=\"chart_temp_div\" style=\"margin-right: 30px;\"></div>";
+  html += "<h2>温度和湿度</h2>";
+  html += "<div id=\"chart_temp_div\"></div>";
   html += "<div id=\"chart_humidity_div\"></div>";
-  html += "</div>";
-  html += "<p style=\"line-height: 0;\">温度：" + String(temperature, 1) + "\u00B0C</p>";
-  html += "<p style=\"line-height: 0;\">湿度：" + String(humidity, 0) + "%</p>";
-  html += "<p style=\"line-height: 0;\">WiFi SSID：" + WiFi.SSID() + "</p>";
-  html += "<p style=\"line-height: 0;\">IP地址：" + WiFi.localIP().toString() + "</p>";
-  html += "<p style=\"line-height: 0;\">MCA地址：" + WiFi.macAddress() + "</p>";
-  html += "<p style=\"line-height: 0;\">RSSI：" + String(WiFi.RSSI()) + "Db</p>";
-  html += "<p style=\"line-height: 0;\">NTP服务器：" + String(ntp_server) + "</p>";
-
+  html += "<p>温度：" + String(temperature, 1) + "\u00B0C</p>";
+  html += "<p>湿度：" + String(humidity, 0) + "%</p>";
+  html += "<p>WiFi SSID：" + WiFi.SSID() + "</p>";
+  html += "<p>IP地址：" + WiFi.localIP().toString() + "</p>";
+  html += "<p>MCA地址：" + WiFi.macAddress() + "</p>";
+  html += "<p>RSSI：" + String(WiFi.RSSI()) + "Db</p>";
   html += "</body></html>";
 
   server.send(200, "text/html", html);
@@ -357,8 +351,8 @@ void serveChartsLoader()
   file.close();
 }
 
-// 如果被墙可以用这个，使用百度ECharts JS库，仪表盘在电脑页面大小显示不正常
-/*void dht22()
+//如果被墙可以用这个，使用百度ECharts JS库，仪表盘在电脑页面大小显示不正常
+/*void dht22()  
 {
   if (server.uri() != "/dht22")
   {
