@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-//#include <ESP8266mDNS.h>
+#include <ESP8266mDNS.h>
 #include <BlynkSimpleEsp8266.h>
-//#include <WiFiUdp.h>
-//#include <ArduinoOTA.h>
+#include <WiFiUdp.h>
+#include <ArduinoOTA.h>
 
 #include <Adafruit_Si7021.h>
 #include <MAX44009.h>
