@@ -18,10 +18,10 @@ Adafruit_BMP085 bmp;
 
 BH1750FVI LightSensor(BH1750FVI::k_DevModeContLowRes);
 
-char auth[] = "你的Blynk_Token";
-char ssid[] = "你的WiFi_SSID";
+char auth[] = "你的Blynk token";
+char ssid[] = "你的WiFi SSID";
 char pass[] = "你的WiFi密码";
-char blynk_server[] = "你的Blynk服务器路径"; // Blynk服务器路径
+char blynk_server[] = "Blynk服务器路径"; // Blynk服务器路径
 int blynk_port = 8080;                       // Blynk端口号
 
 BlynkTimer timer;

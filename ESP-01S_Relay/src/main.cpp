@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-//#define BLYNK_PRINT Serial
+#define BLYNK_PRINT Serial
 //使用ESP-01S的话会空间不够
 #include <ESP8266WiFi.h>
 #include <ESP8266mDNS.h>
