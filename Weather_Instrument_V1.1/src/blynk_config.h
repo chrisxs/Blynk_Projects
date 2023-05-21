@@ -391,14 +391,14 @@ void sensor_web_page()
   html += "<div id=\"chart_pressure_div\" style=\"margin-right: 30px;\"></div>";
   html += "<div id=\"chart_light_div\" style=\"margin-right: 30px;\"></div>";
   html += "</div>";
-  html += "<p style=\"line-height: 0;\">温度：" + String(t, 1) + "\u00B0C</p>";
-  html += "<p style=\"line-height: 0;\">湿度：" + String(h, 0) + "%</p>";
-  html += "<p style=\"line-height: 0;\">大气压：" + String(p, 1) + "hPa</p>";
-  html += "<p style=\"line-height: 0;\">光照度：" + String(t, 0) + "lux</p>";
+  html += "<p style=\"line-height: 0;\">温度：" + String(t, 1) + " \u00B0C</p>";
+  html += "<p style=\"line-height: 0;\">湿度：" + String(h, 0) + " %</p>";
+  html += "<p style=\"line-height: 0;\">大气压：" + String(p, 1) + " hPa</p>";
+  html += "<p style=\"line-height: 0;\">光照度：" + String(l) + " lux</p>";
   html += "<p style=\"line-height: 0;\">WiFi SSID：" + WiFi.SSID() + "</p>";
   html += "<p style=\"line-height: 0;\">IP地址：" + WiFi.localIP().toString() + "</p>";
   html += "<p style=\"line-height: 0;\">MCA地址：" + WiFi.macAddress() + "</p>";
-  html += "<p style=\"line-height: 0;\">RSSI：" + String(WiFi.RSSI()) + "dB</p>";
+  html += "<p style=\"line-height: 0;\">RSSI：" + String(WiFi.RSSI()) + " dB</p>";
 
   html += "</body></html>";
 
