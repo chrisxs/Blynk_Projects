@@ -6,11 +6,6 @@
 #include "OTA_setting.h"
 #include "blynk_config.h"
 
-
-
-
-
-
 void setup()
 {
   Serial.begin(115200);

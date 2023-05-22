@@ -82,6 +82,7 @@ Libraries
 │   ├── Adafruit BusIO @ 1.14.1 (required: Adafruit BusIO)
 │   └── Adafruit Unified Sensor @ 1.1.9 (required: Adafruit Unified Sensor)
 ├── Adafruit Si7021 Library @ 1.5.1 (required: adafruit/Adafruit Si7021 Library @ ^1.5.1)
+├── BH1750FVI @ 1.1.1 (required: PeterEmbedded/BH1750FVI)
 ├── Blynk @ 1.2.0 (required: blynkkk/Blynk @ ^1.2.0)
 └── ElegantOTA @ 2.2.9 (required: ayushsharma82/ElegantOTA)
 ```
