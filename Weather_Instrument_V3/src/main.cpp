@@ -61,8 +61,8 @@ void sendSensor()
   {
     float h = sht30.humidity;
     float t = sht30.cTemp;
-    Blynk.virtualWrite(V0, h);
-    Blynk.virtualWrite(V1, t);
+    Blynk.virtualWrite(V0, t);
+    Blynk.virtualWrite(V1, h);
   }
   else
   {
@@ -80,9 +80,9 @@ void sendSensor()
     float p = bmp.readPressure();
     Blynk.virtualWrite(V2, p / 100);
   }
-    uint16_t lux = LightSensor.GetLightIntensity();
-    float l = lux;
-    Blynk.virtualWrite(V3, l);
+  uint16_t lux = LightSensor.GetLightIntensity();
+  float l = lux;
+  Blynk.virtualWrite(V3, l);
 }
 
 BLYNK_WRITE(V7)
@@ -309,6 +309,7 @@ void setup()
   OTAserver.on("/", []()
                { OTAserver.send(200, "text/plain", "Hi! I am ESP8266."); });
 }
+
 
 void loop()
 {
