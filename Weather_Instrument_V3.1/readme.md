@@ -36,6 +36,7 @@ void loop() {}
 ```
 
 ~~2. 按下重置按钮`D5`，板载LED会亮起并闪耀，等待约30秒~~
+
 3. 用手机或者电脑连接名为：`ESP8266AP`的WiFi热点，浏览器进入`192.168.4.1`，配置好里面的WiFi和Blynk相关信息即可
 
 ~~**目前Web OTA和Web 串口会跟WiFiManager有冲突，所以未加入**~~
@@ -49,25 +50,22 @@ void loop() {}
 
 ## 使用库：
 ```
-d1_mini dependencies...
 Platform espressif8266 @ 2.6.3 (required: espressif8266 @ 2.6.3)
 ├── framework-arduinoespressif8266 @ 3.20704.0 (required: platformio/framework-arduinoespressif8266 @ ~3.20704.0)
 ├── tool-esptool @ 1.413.0 (required: platformio/tool-esptool @ <2)
 ├── tool-esptoolpy @ 1.30000.201119 (required: platformio/tool-esptoolpy @ ~1.30000.0)
 ├── tool-mklittlefs @ 1.203.210628 (required: platformio/tool-mklittlefs @ ~1.203.0)
 ├── tool-mkspiffs @ 1.200.0 (required: platformio/tool-mkspiffs @ ~1.200.0)
-└── toolchain-xtensa @ 1.40802.0 (required: platformio/toolchain-xtensa @ ~1.40802.0)
+└── toolchain-xtensa @ 2.40802.200502 (required: platformio/toolchain-xtensa @ ~2.40802.0)
 
 Libraries
 ├── Adafruit BMP085 Library @ 1.2.2 (required: adafruit/Adafruit BMP085 Library @ 1.2.2)
 │   ├── Adafruit BusIO @ 1.17.0 (required: Adafruit BusIO)
 │   └── Adafruit Unified Sensor @ 1.1.15 (required: Adafruit Unified Sensor)
-├── ArduinoJson @ 6.21.0 (required: bblanchon/ArduinoJson @ 6.21.0)
 ├── BH1750FVI @ 1.1.1 (required: peterembedded/BH1750FVI @ 1.1.1)
 ├── Blynk @ 1.2.0 (required: blynkkk/Blynk @ 1.2.0)
 ├── ElegantOTA @ 2.2.9 (required: ayushsharma82/ElegantOTA @ 2.2.9)
-├── WEMOS SHT3x @ 1.0.0 (required: wemos/WEMOS SHT3x @ 1.0.0)
-└── WiFiManager @ 0.16.0 (required: tzapu/WiFiManager @ 0.16.0)
+└── WEMOS SHT3x @ 1.0.0 (required: wemos/WEMOS SHT3x @ 1.0.0)
 ```
 ## 更新日志：
 2025年1月18日
