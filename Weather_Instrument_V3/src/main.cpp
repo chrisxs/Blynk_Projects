@@ -61,8 +61,8 @@ void sendSensor()
   {
     float h = sht30.humidity;
     float t = sht30.cTemp;
-    Blynk.virtualWrite(V0, t);
-    Blynk.virtualWrite(V1, h);
+    Blynk.virtualWrite(V0, h);
+    Blynk.virtualWrite(V1, t);
   }
   else
   {
