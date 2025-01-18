@@ -1,13 +1,13 @@
 #include <BlynkSimpleEsp8266.h>
-#include <Adafruit_BMP085.h>
-#include <BH1750FVI.h>
-#include "Adafruit_Si7021.h"
+
 #include <Wire.h>
 #include <SPI.h>
+#include <Adafruit_BMP085.h>
+#include <WEMOS_SHT3X.h>
+#include <BH1750FVI.h>
 
-Adafruit_Si7021 sensor = Adafruit_Si7021();
 Adafruit_BMP085 bmp;
-
+SHT3X sht30(0x44);
 BH1750FVI LightSensor(BH1750FVI::k_DevModeContLowRes);
 
 ESP8266WebServer blynk_config_server(8080);
@@ -18,36 +18,42 @@ int blynk_port;
 
 BlynkTimer timer;
 
-WidgetTerminal terminal(V10);
+WidgetTerminal terminal(V7);
 
 void sendSensor()
 {
-  float h = sensor.readHumidity();
-  float t = sensor.readTemperature(); // dht.readTemperature(true)
-  float p = bmp.readPressure();
-  uint16_t l = LightSensor.GetLightIntensity();
-  if (sensor.readHumidity() >= 100)
+  if (sht30.get() == 0)
   {
-    h = h + 100;
+    float h = sht30.humidity;
+    float t = sht30.cTemp;
+    Blynk.virtualWrite(V0, h);
+    Blynk.virtualWrite(V1, t);
   }
-  else if (sensor.readHumidity() <= 0)
+  else
   {
-    h = h + 100;
+    Serial.println("SHT3X Error!");
+    terminal.println("SHT3X Error!");
   }
-  else if (sensor.readHumidity() < 25)
+
+  if (!bmp.begin())
   {
-    h = h + 75;
+    Serial.println("BMP085 Error!");
+    terminal.println("BMP085 Error!");
   }
-  Blynk.virtualWrite(V0, t);
-  Blynk.virtualWrite(V1, h);
-  Blynk.virtualWrite(V2, p / 100);
+  else
+  {
+    float p = bmp.readPressure();
+    Blynk.virtualWrite(V2, p / 100);
+  }
+  uint16_t lux = LightSensor.GetLightIntensity();
+  float l = lux;
   Blynk.virtualWrite(V3, l);
   Blynk.virtualWrite(V4, "IP地址 :", WiFi.localIP().toString());
   Blynk.virtualWrite(V5, "MAC地址  :", WiFi.macAddress());
   Blynk.virtualWrite(V6, "RSSI:", WiFi.RSSI(), " ", "SSID: ", WiFi.SSID());
 }
 
-BLYNK_WRITE(V10)
+BLYNK_WRITE(V7)
 {
   if (String("blynk") == param.asStr())
   {
@@ -71,6 +77,12 @@ BLYNK_WRITE(V10)
   {
     terminal.clear();
   }
+  if (String("clear") == param.asStr())
+  {
+    terminal.clear();
+  }
+
+  // 确保所有内容都已发送
   terminal.flush();
 }
 
@@ -265,14 +277,15 @@ void load_blynk_config()
 
 void sensor_web_page()
 {
+  sht30.get();
   if (server.uri() != "/sensor_web_page")
   {
     server.send(404, "text/plain", "Not Found");
     return;
   }
-  float h = sensor.readHumidity();
-  float t = sensor.readTemperature(); // dht.readTemperature(true)
-  float p = bmp.readPressure()/100;
+  float h = sht30.humidity;
+  float t = sht30.cTemp;
+  float p = bmp.readPressure() / 100;
   uint16_t l = LightSensor.GetLightIntensity();
 
   String html = "<html><head><meta charset=\"UTF-8\">";
@@ -290,7 +303,7 @@ void sensor_web_page()
   html += "}";
   html += "</style>";
 
-  html += "<h1>4合1气象采集仪 V1.1</h1>";
+  html += "<h1>4合1气象采集仪 V3.1</h1>";
   html += "<h2>Web诊断页面</h2>";
 
   // 默认是使用内置SPIFFS，使用前先输把loader.js刷入SPIFFS
