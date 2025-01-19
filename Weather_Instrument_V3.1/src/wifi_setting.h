@@ -1,6 +1,6 @@
 #include <ESP8266WebServer.h>
 
-const char *ssid = "ESP8266AP"; // 创建一个热点，热点名称为"ESP8266AP"
+const char *ssid = "ESP-DEMO"; // 创建一个热点，热点名称为"ESP8266AP"
 const char *password = "";      // 热点密码为空
 
 ESP8266WebServer server(80); // 创建一个Web服务器，端口号为80

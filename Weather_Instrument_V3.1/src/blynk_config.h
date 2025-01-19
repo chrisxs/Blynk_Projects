@@ -304,7 +304,7 @@ void sensor_web_page()
   html += "</style>";
 
   html += "<h1>4合1气象采集仪 V3.1</h1>";
-  html += "<h2>Web诊断页面</h2>";
+  html += "<h2>Web诊断页面-ESP-DEMO</h2>";
 
   // 默认是使用内置SPIFFS，使用前先输把loader.js刷入SPIFFS
   html += "<script type=\"text/javascript\" src=\"/loader.js\"></script>";
